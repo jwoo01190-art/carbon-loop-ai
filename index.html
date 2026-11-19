@@ -1,0 +1,4009 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#07130f" />
+<title>카본루프 · Carbon Loop</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" />
+<style>
+/* Carbon Loop — 디자인 토큰 & 스타일 (Tailwind 테마로 옮길 값) */
+:root, [data-theme="dark"] {
+  --bg: #07130f; --surface: #0e211b; --surface2: #13302a; --line: #1c3b33; --line2: #24493f;
+  --text: #e8f5ef; --muted: #86a89b; --mint: #5eeabe; --on-mint: #05241b; --deep: #0b3b2e;
+  --ok: #4fdc9b; --warn: #f2c14e; --danger: #ff6b5e; --info: #6cc6ff;
+  --c-gh: #5eeabe; --c-mu: #f2c14e; --c-bc: #b88b62;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 30px rgba(0,0,0,.25);
+  --sans: "Pretendard Variable", Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  --bg: #eef3f0; --surface: #ffffff; --surface2: #eaf2ee; --line: #dbe6e1; --line2: #c9dad2;
+  --text: #0c2a21; --muted: #5d7a70; --mint: #0f9f75; --on-mint: #ffffff; --deep: #0b3b2e;
+  --ok: #129b62; --warn: #c58a06; --danger: #d9412f; --info: #1f7fc4;
+  --c-gh: #16b083; --c-mu: #e0a615; --c-bc: #9a6d45;
+  --shadow: 0 1px 2px rgba(12,42,33,.05), 0 6px 20px rgba(12,42,33,.05);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+body { font-size: 14px; line-height: 1.5; }
+button { font: inherit; color: inherit; cursor: pointer; }
+input { font: inherit; color: inherit; }
+h1, h2, h3, p { margin: 0; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.t-ok { color: var(--ok) !important; } .t-warn { color: var(--warn) !important; } .t-danger { color: var(--danger) !important; }
+
+/* ---------- 레이아웃 ---------- */
+.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+.side { position: sticky; top: 0; height: 100vh; border-right: 1px solid var(--line); padding: 22px 14px; display: flex; flex-direction: column; gap: 22px; background: var(--surface); }
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; cursor: pointer; }
+.brand b, .splash-brand b { display: block; font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+.brand span, .splash-brand span { display: block; font: 600 10px var(--mono); letter-spacing: .18em; color: var(--muted); }
+.side nav { display: flex; flex-direction: column; gap: 2px; }
+.side nav button { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px; border: 0; background: none; color: var(--muted); font-weight: 600; text-align: left; position: relative; }
+.side nav button:hover { background: var(--surface2); color: var(--text); }
+.side nav button.on { background: var(--surface2); color: var(--mint); }
+.side nav .dotn { margin-left: auto; }
+.side-f { margin-top: auto; padding: 12px; border-radius: 12px; background: var(--surface2); display: grid; gap: 4px; }
+.site { display: flex; gap: 6px; align-items: center; font-weight: 600; font-size: 13px; }
+.side-src { font-size: 11px; color: var(--muted); }
+.main { min-width: 0; padding: 0 28px; }
+.top { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 18px 0 14px; background: linear-gradient(var(--bg) 75%, transparent); }
+.top-l { display: flex; gap: 10px; align-items: center; }
+.top h1 { font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
+.top-sub { font-size: 11.5px; color: var(--muted); }
+.top-r { display: flex; gap: 8px; align-items: center; }
+.m-logo, .m-only { display: none !important; }
+.live { display: inline-flex; gap: 7px; align-items: center; font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); }
+.live i { width: 7px; height: 7px; border-radius: 9px; background: var(--ok); box-shadow: 0 0 0 0 var(--ok); animation: ping 1.6s infinite; }
+.live.off i { background: var(--danger); animation: none; } .live.off { color: var(--danger); }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 60%, transparent); } 100% { box-shadow: 0 0 0 8px transparent; } }
+.icon-btn { position: relative; width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+.dotn { position: absolute; top: -4px; right: -4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--danger); color: #fff; font: 700 10px/17px var(--mono); font-style: normal; text-align: center; }
+.side nav .dotn { position: static; }
+.screen { display: grid; gap: 16px; padding-bottom: 20px; max-width: 1180px; animation: fade .3s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } }
+.foot-sp { height: 40px; }
+.tabbar { display: none; }
+
+/* ---------- 카드 · 프리미티브 ---------- */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+.card-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.card-h h3 { font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+.card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.col { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid-home { display: grid; grid-template-columns: minmax(300px, 1.05fr) 1fr; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-4 > .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; box-shadow: var(--shadow); }
+.stat-l { font-size: 12px; color: var(--muted); font-weight: 500; }
+.stat-v { font: 700 28px/1.15 var(--mono); letter-spacing: -.03em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat.sm .stat-v { font-size: 20px; }
+.unit { font: 500 13px var(--sans); color: var(--muted); margin-left: 4px; letter-spacing: 0; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.bdot { width: 6px; height: 6px; border-radius: 6px; background: currentColor; }
+.b-ok { background: color-mix(in oklab, var(--ok) 16%, transparent); color: var(--ok); }
+.b-warn { background: color-mix(in oklab, var(--warn) 18%, transparent); color: var(--warn); }
+.b-danger { background: color-mix(in oklab, var(--danger) 18%, transparent); color: var(--danger); }
+.b-info { background: color-mix(in oklab, var(--info) 16%, transparent); color: var(--info); }
+.b-mute { background: var(--surface2); color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--line2); background: var(--surface2); font-weight: 700; }
+.btn:hover { border-color: var(--mint); }
+.btn.primary { background: var(--mint); color: var(--on-mint); border-color: var(--mint); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 6px 11px; font-size: 12.5px; border-radius: 9px; }
+.btn.lg { padding: 14px 24px; font-size: 15px; border-radius: 14px; }
+.btn.full { width: 100%; }
+.seg { display: inline-flex; background: var(--surface2); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: none; padding: 5px 11px; border-radius: 8px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.seg button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.tgl { width: 46px; height: 27px; border-radius: 30px; border: 0; background: var(--line2); position: relative; transition: .2s; flex: none; }
+.tgl i { position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 20px; background: #fff; transition: .2s; }
+.tgl.on { background: var(--mint); } .tgl.on i { left: 22px; }
+.tgl:disabled { opacity: .45; cursor: not-allowed; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11.5px; color: var(--muted); margin-top: 8px; justify-content: center; }
+.legend span { display: inline-flex; gap: 5px; align-items: center; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.legend i.dash { height: 0; border-top: 2px dashed var(--mint); border-radius: 0; width: 14px; }
+.empty { padding: 22px; text-align: center; color: var(--muted); font-size: 13px; border: 1px dashed var(--line2); border-radius: 12px; }
+.note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.55; text-wrap: pretty; }
+.ph { height: 180px; display: grid; place-items: center; color: var(--muted); }
+.ctip { background: var(--surface); border: 1px solid var(--line2); border-radius: 10px; padding: 8px 10px; font-size: 12px; box-shadow: var(--shadow); }
+.ctip-t { font: 600 11px var(--mono); color: var(--muted); margin-bottom: 4px; }
+.ctip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+.ctip b { font-family: var(--mono); }
+
+/* ---------- AI 판단 카드 ---------- */
+.ai-card { --lv: var(--ok); position: relative; overflow: hidden; border-radius: 20px; padding: 20px 22px; background: linear-gradient(135deg, var(--deep), color-mix(in oklab, var(--deep) 80%, #000)); color: #eafff6; border: 1px solid color-mix(in oklab, var(--lv) 40%, transparent); }
+.ai-card.lv-warn { --lv: var(--warn); } .ai-card.lv-danger { --lv: var(--danger); background: linear-gradient(135deg, #4a1712, #2a0d0a); } .ai-card.lv-info { --lv: var(--info); }
+.ai-card::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; border: 22px solid color-mix(in oklab, var(--lv) 22%, transparent); }
+.ai-top { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+.ai-tag { display: inline-flex; gap: 8px; align-items: center; font: 700 12px var(--sans); letter-spacing: .02em; color: var(--lv); }
+.pulse { width: 8px; height: 8px; border-radius: 8px; background: var(--lv); animation: ping2 1.4s infinite; }
+@keyframes ping2 { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--lv) 70%, transparent); } 100% { box-shadow: 0 0 0 10px transparent; } }
+.ai-mode { font-size: 11.5px; font-weight: 600; opacity: .7; }
+.ai-text { position: relative; z-index: 1; font-size: 21px; font-weight: 700; line-height: 1.4; letter-spacing: -.025em; margin: 10px 0 14px; text-wrap: pretty; max-width: 820px; }
+.ai-meta { display: flex; gap: 26px; flex-wrap: wrap; position: relative; z-index: 1; }
+.ai-meta div { display: grid; gap: 1px; } .ai-meta span { font-size: 11px; opacity: .6; } .ai-meta b { font-size: 13px; }
+.anom { position: relative; z-index: 1; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,.06); }
+.anom-l { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.anom-l b { padding: 3px 10px; border-radius: 99px; font-size: 12px; white-space: nowrap; }
+.anom.good b { background: rgba(79,220,155,.2); color: #6ff0b3; } .anom.bad b { background: rgba(242,193,78,.22); color: #ffd36e; }
+.anom-l span { font-size: 12.5px; opacity: .85; }
+.anom-k { font-size: 11px; opacity: .55; white-space: nowrap; }
+
+/* ---------- 게이지 · 액추에이터 ---------- */
+.c-gauge { display: flex; flex-direction: column; align-items: center; }
+.c-gauge .card-h { align-self: stretch; }
+.gauge { position: relative; margin: -6px auto 0; }
+.g-num { font: 800 50px var(--mono); letter-spacing: -.04em; }
+.g-status { text-align: center; margin-top: -18px; }
+.g-status .badge { font-size: 13px; padding: 5px 12px; }
+.act { position: relative; padding: 14px; border-radius: 14px; background: var(--surface2); border: 1px solid transparent; }
+.act-dot { position: absolute; top: 14px; right: 14px; width: 9px; height: 9px; border-radius: 9px; background: var(--line2); }
+.act.on { border-color: color-mix(in oklab, var(--mint) 45%, transparent); }
+.act.on .act-dot { background: var(--mint); box-shadow: 0 0 0 4px color-mix(in oklab, var(--mint) 20%, transparent); }
+.act.on.t-danger { border-color: color-mix(in oklab, var(--danger) 50%, transparent); } .act.on.t-danger .act-dot { background: var(--danger); box-shadow: 0 0 0 4px color-mix(in oklab, var(--danger) 20%, transparent); }
+.act-l { font-size: 12px; color: var(--muted); }
+.act-v { font-size: 17px; font-weight: 800; margin: 2px 0; letter-spacing: -.02em; }
+.act.on .act-v { color: var(--mint); } .act.on.t-danger .act-v { color: var(--danger); }
+.act-h { font: 500 10.5px var(--mono); color: var(--muted); }
+.conn { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.conn > svg { color: var(--ok); flex: none; } .conn.off > svg { color: var(--danger); }
+.conn b { display: block; font-size: 13.5px; } .conn span { display: block; font-size: 11.5px; color: var(--muted); }
+.conn.off { border-color: color-mix(in oklab, var(--danger) 50%, transparent); } .conn.off b { color: var(--danger); }
+.conn-r { margin-left: auto; text-align: right; }
+.conn-r b { font-size: 14px; }
+.mini { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 14px 16px; display: grid; gap: 2px; box-shadow: var(--shadow); }
+.mini:hover { border-color: var(--mint); }
+.mini span { font-size: 12px; color: var(--muted); } .mini b { font: 700 24px var(--mono); letter-spacing: -.03em; } .mini small { font: 500 12px var(--sans); color: var(--muted); margin-left: 3px; }
+.mini em { font-style: normal; font-size: 11.5px; color: var(--mint); font-weight: 600; }
+
+/* ---------- 로그 ---------- */
+.log { list-style: none; margin: 0; padding: 0; display: grid; }
+.log li { display: grid; grid-template-columns: 44px 44px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; align-items: baseline; }
+.log li:first-child { border-top: 0; }
+.log-t { color: var(--muted); font-size: 11.5px; }
+.log-k { font-size: 11px; font-weight: 700; padding: 1px 0; border-radius: 6px; text-align: center; background: var(--surface2); color: var(--muted); }
+.log .lv-warn .log-k { color: var(--warn); } .log .lv-danger .log-k { color: var(--danger); } .log .lv-ok .log-k { color: var(--ok); } .log .lv-info .log-k { color: var(--info); }
+.log-x { text-wrap: pretty; }
+
+/* ---------- 기록 ---------- */
+.evs { list-style: none; margin: 0; padding: 0; }
+.evs li { display: grid; grid-template-columns: 76px 1fr 1fr 70px; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
+.evs li:first-child { border-top: 0; }
+.evs li b { text-align: right; }
+.evs.live { margin-bottom: 8px; padding: 2px 12px; border-radius: 12px; background: color-mix(in oklab, var(--mint) 10%, transparent); }
+.ev-d { font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 7px; text-align: center; }
+.d-gh { background: color-mix(in oklab, var(--c-gh) 18%, transparent); color: var(--c-gh); }
+.d-mu { background: color-mix(in oklab, var(--c-mu) 18%, transparent); color: var(--c-mu); }
+.d-bc { background: color-mix(in oklab, var(--c-bc) 22%, transparent); color: var(--c-bc); }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th { text-align: left; font-size: 11.5px; color: var(--muted); font-weight: 600; padding: 6px 0; }
+.tbl td { padding: 8px 0; border-top: 1px solid var(--line); }
+.tbl td:last-child { display: flex; gap: 8px; align-items: center; }
+.minibar { width: 90px; height: 6px; border-radius: 6px; background: var(--surface2); overflow: hidden; } .minibar i { display: block; height: 100%; background: var(--ok); }
+
+/* ---------- 라우팅 ---------- */
+.flow { display: grid; grid-template-columns: 110px 70px 1fr; align-items: stretch; gap: 0; }
+.flow-src { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px 8px; border-radius: 16px; background: var(--surface2); }
+.flow-src span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.flow-src b { font-size: 18px; } .flow-src small { font-size: 11px; color: var(--muted); }
+.tankv { width: 46px; height: 120px; border-radius: 12px; border: 2px solid var(--line2); position: relative; overflow: hidden; }
+.tankv i { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(var(--mint), color-mix(in oklab, var(--mint) 55%, var(--deep))); transition: height .5s; }
+.flow-lines { display: grid; grid-template-rows: repeat(3, 1fr); gap: 12px; }
+.fl { position: relative; display: flex; align-items: center; justify-content: center; }
+.fl i { position: absolute; left: 0; right: 0; top: 50%; height: 3px; background: var(--line2); border-radius: 3px; overflow: hidden; }
+.fl span { position: relative; z-index: 1; font-size: 10px; color: var(--muted); background: var(--surface); padding: 1px 5px; border-radius: 6px; transform: translateY(-12px); }
+.fl.on i { background: repeating-linear-gradient(90deg, var(--lc) 0 10px, transparent 10px 18px); background-size: 36px 3px; animation: flowx .6s linear infinite; }
+.fl-gh { --lc: var(--c-gh); } .fl-mu { --lc: var(--c-mu); } .fl-bc { --lc: var(--c-bc); }
+.fl.on span { color: var(--lc); }
+@keyframes flowx { to { background-position: 36px 0; } }
+.flow-dst { display: grid; grid-template-rows: repeat(3, 1fr); gap: 12px; }
+.dest { padding: 14px 16px; border-radius: 16px; background: var(--surface2); border: 1px solid transparent; display: grid; gap: 8px; transition: border-color .3s; }
+.dest.flowing { border-color: color-mix(in oklab, var(--mint) 45%, transparent); }
+.dest-h { display: flex; align-items: center; gap: 10px; }
+.dest-h > div { flex: 1; min-width: 0; } .dest-h b { display: block; font-size: 14.5px; } .dest-h span { display: block; font-size: 11.5px; color: var(--muted); }
+.dest-n { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--surface); font-weight: 700; font-size: 12px; color: var(--mint); flex: none; }
+.dest-v { display: flex; align-items: baseline; gap: 6px; } .dest-v b { font-size: 26px; font-weight: 700; letter-spacing: -.03em; } .dest-v > span { color: var(--muted); font-size: 12px; margin-right: auto; }
+.dest-f { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); } .dest-f b { color: var(--text); }
+.rangebar { position: relative; height: 8px; border-radius: 8px; background: var(--surface); }
+.rangebar.sm { height: 6px; flex: 1; }
+.rangebar .band { position: absolute; top: 0; bottom: 0; background: color-mix(in oklab, var(--ok) 40%, transparent); border-radius: 8px; }
+.rangebar .cur { position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 14px; background: var(--text); border: 3px solid var(--surface2); transform: translate(-50%, -50%); transition: left .4s; }
+.rangebar .mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ok); }
+.dest-bc { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.dest-bc span { font-size: 11.5px; color: var(--muted); display: block; } .dest-bc b { font-size: 18px; }
+.dest-note { grid-column: 1 / -1; font-size: 11.5px; color: var(--muted); }
+.stack { display: flex; height: 38px; border-radius: 12px; overflow: hidden; background: var(--surface2); margin-bottom: 10px; }
+.stack i { display: flex; align-items: center; padding: 0 10px; color: #06231a; font-style: normal; font-size: 12px; font-weight: 800; white-space: nowrap; overflow: hidden; transition: width .5s; }
+.soils { display: grid; gap: 12px; }
+.soil { padding: 12px 14px; border-radius: 14px; background: var(--surface2); display: grid; gap: 8px; }
+.soil-h { display: flex; justify-content: space-between; align-items: center; } .soil-h b { font-size: 13.5px; }
+.soil-m { display: flex; align-items: center; gap: 10px; font-size: 12px; } .soil-m > span { width: 50px; color: var(--muted); } .soil-m > b { width: 48px; text-align: right; font-size: 12.5px; }
+
+/* ---------- 임팩트 ---------- */
+.impact-wrap { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 16px; align-items: start; }
+.impact-prev { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); }
+.impact-prev canvas { width: 100%; display: block; aspect-ratio: 4 / 5; }
+.calc { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.calc > div:not(.op) { padding: 10px 14px; border-radius: 12px; background: var(--surface2); }
+.calc span { display: block; font-size: 11.5px; color: var(--muted); } .calc b { font-size: 18px; }
+.calc .op { font-size: 20px; color: var(--muted); }
+.calc .res { background: color-mix(in oklab, var(--mint) 18%, transparent) !important; } .calc .res b { color: var(--mint); }
+.btns .btn { padding: 13px; }
+
+/* ---------- 알림 ---------- */
+.perm { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--surface2); font-size: 12.5px; color: var(--muted); margin-bottom: 12px; flex-wrap: wrap; }
+.perm b { color: var(--text); }
+.alerts { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.al { display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--surface2); }
+.al-bar { width: 4px; border-radius: 4px; background: var(--info); flex: none; }
+.lv-danger .al-bar { background: var(--danger); } .lv-warn .al-bar { background: var(--warn); } .lv-ok .al-bar { background: var(--ok); }
+.al-b { flex: 1; display: grid; gap: 4px; justify-items: start; } .al-h { display: flex; justify-content: space-between; width: 100%; } .al-h span { font-size: 11.5px; color: var(--muted); } .al p { font-size: 13px; color: var(--muted); }
+
+/* ---------- 설정 ---------- */
+.set-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 11px 0; border-top: 1px solid var(--line); }
+.card .set-row:first-of-type { border-top: 0; }
+.set-row > div:first-child b { display: block; font-size: 13.5px; } .set-row > div:first-child span { display: block; font-size: 11.5px; color: var(--muted); }
+.set-row.col-r { flex-direction: column; align-items: stretch; }
+.num { display: flex; align-items: center; gap: 4px; flex: none; }
+.num button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line2); background: var(--surface2); font-weight: 700; }
+.num input { width: 64px; height: 30px; text-align: right; border: 1px solid var(--line2); border-radius: 8px; background: var(--surface); padding: 0 8px; font-family: var(--mono); }
+.num span { font-size: 11px; color: var(--muted); width: 26px; }
+.manual.dim .set-row { opacity: .6; }
+.fb { display: flex; gap: 6px; } .fb input { flex: 1; min-width: 0; height: 34px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--line2); background: var(--surface2); font-size: 12px; font-family: var(--mono); }
+
+/* ---------- 소개 ---------- */
+.hero { padding: 30px 28px; border-radius: 22px; background: var(--deep); color: #eafff6; position: relative; overflow: hidden; }
+.hero::after { content: ""; position: absolute; right: -80px; bottom: -120px; width: 320px; height: 320px; border-radius: 50%; border: 36px solid rgba(94,234,190,.14); }
+.eyebrow { font-size: 11px; letter-spacing: .2em; color: #5eeabe; }
+.hero h2 { font-size: 30px; line-height: 1.3; font-weight: 800; letter-spacing: -.035em; margin: 10px 0 12px; position: relative; z-index: 1; }
+.hero p { max-width: 620px; opacity: .8; font-size: 14.5px; position: relative; z-index: 1; text-wrap: pretty; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.fact .fact-n { font-size: 44px; font-weight: 800; color: var(--mint); letter-spacing: -.04em; display: block; line-height: 1.1; } .fact .fact-n small { font-size: 20px; }
+.fact span { font-size: 13px; color: var(--muted); }
+.about-loop { display: grid; place-items: center; padding: 8px 0 18px; }
+.hw > div { padding: 12px 14px; border-radius: 12px; background: var(--surface2); } .hw span { font-size: 10.5px; color: var(--muted); letter-spacing: .06em; display: block; } .hw b { font-size: 13px; }
+.road { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; counter-reset: r; }
+.road li { position: relative; padding: 16px; border-radius: 14px; background: var(--surface2); display: grid; gap: 8px; }
+.road li:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 18px; color: var(--mint); font-weight: 800; z-index: 1; }
+.road li > span { font-size: 11px; color: var(--mint); font-weight: 700; } .road b { font-size: 20px; letter-spacing: -.03em; } .road p { font-size: 12.5px; color: var(--muted); margin: 3px 0 6px; } .road em { font-style: normal; font-size: 11px; }
+.sites { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 8px; }
+.sites li { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 12px; background: var(--surface2); } .sites li b { flex: 1; font-size: 13.5px; } .sites svg { color: var(--mint); }
+.btn.add { width: 100%; border-style: dashed; background: transparent; color: var(--mint); }
+
+/* ---------- 순환 흐름도 ---------- */
+.loop { position: relative; margin: 0 auto; }
+.loop-run { animation: run 6s linear infinite; transform-origin: 170px 170px; }
+@keyframes run { to { stroke-dashoffset: -804; } }
+.loop-lbl { position: absolute; display: grid; white-space: nowrap; transition: opacity .5s; }
+.loop-lbl b { font-size: 13px; font-weight: 700; } .loop-lbl span { font: 500 10.5px var(--mono); color: var(--muted); }
+
+/* ---------- 스플래시 ---------- */
+.splash { min-height: 100vh; display: grid; place-items: center; padding: 30px 20px; background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--mint) 12%, var(--bg)), var(--bg) 65%); }
+.splash-in { display: grid; justify-items: center; gap: 22px; max-width: 520px; text-align: center; }
+.splash-brand { display: flex; gap: 10px; align-items: center; text-align: left; }
+.splash-in .loop { padding: 0 90px; box-sizing: content-box; }
+.splash-copy { font-size: 18px; line-height: 1.6; font-weight: 700; letter-spacing: -.02em; }
+.splash-copy em { font-style: normal; font-weight: 500; font-size: 14px; color: var(--muted); display: block; margin-top: 8px; }
+.splash-foot { font-size: 11.5px; color: var(--muted); font-family: var(--mono); }
+.splash .btn { transition: opacity .4s; }
+
+/* ---------- 시연 패널 · 토스트 ---------- */
+.demo-fab { position: fixed; right: 22px; bottom: 22px; z-index: 40; display: flex; gap: 8px; align-items: center; padding: 12px 18px; border-radius: 99px; border: 0; background: var(--text); color: var(--bg); font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.demo-fab.on { background: var(--mint); color: var(--on-mint); }
+.demo-panel { position: fixed; right: 22px; bottom: 80px; z-index: 41; width: 320px; padding: 16px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line2); box-shadow: 0 20px 60px rgba(0,0,0,.4); display: grid; gap: 12px; animation: fade .2s; }
+.demo-h { display: flex; align-items: center; gap: 8px; } .demo-h b { font-size: 15px; } .demo-h span { font-size: 11px; color: var(--muted); margin-right: auto; } .demo-h .icon-btn { width: 30px; height: 30px; }
+.demo-sp { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.demo-list { display: grid; gap: 8px; }
+.demo-b { --c: var(--info); display: flex; align-items: center; gap: 12px; text-align: left; padding: 11px 13px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface2); }
+.demo-b:hover { border-color: var(--c); } .demo-b.t-danger { --c: var(--danger); } .demo-b.t-warn { --c: var(--warn); } .demo-b.t-ok { --c: var(--mint); }
+.demo-b > i { width: 8px; height: 30px; border-radius: 4px; background: var(--c); flex: none; }
+.demo-b div { flex: 1; } .demo-b b { display: block; font-size: 13.5px; } .demo-b span { font-size: 11.5px; color: var(--muted); }
+.demo-b svg { color: var(--c); }
+.toasts { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 60; display: grid; gap: 8px; width: min(440px, calc(100vw - 24px)); }
+.toast { display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line2); box-shadow: 0 14px 40px rgba(0,0,0,.35); animation: drop .3s ease; cursor: pointer; }
+.toast b { font-size: 13.5px; } .toast p { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.toast.lv-danger { border-color: color-mix(in oklab, var(--danger) 60%, transparent); }
+@keyframes drop { from { opacity: 0; transform: translateY(-10px); } }
+
+/* ---------- 반응형 (모바일 우선 PWA) ---------- */
+@media (max-width: 1100px) { .grid-home { grid-template-columns: 1fr 1fr; } .impact-wrap { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .side { display: none; }
+  .main { padding: 0 14px; }
+  .m-logo, .m-only { display: inline-grid !important; }
+  .top h1 { font-size: 19px; }
+  .live { display: none; }
+  .grid-home, .grid-2, .impact-wrap { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { gap: 10px; }
+  .road { grid-template-columns: 1fr; } .road li::after { display: none; }
+  .ai-text { font-size: 18px; }
+  .anom { flex-direction: column; align-items: flex-start; } .anom-l { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .tabbar { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: color-mix(in oklab, var(--surface) 92%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+  .tabbar button { border: 0; background: none; display: grid; justify-items: center; gap: 2px; padding: 6px 0; color: var(--muted); font-size: 10.5px; font-weight: 600; min-height: 48px; }
+  .tabbar button.on { color: var(--mint); }
+  .foot-sp { height: 90px; }
+  .demo-fab { bottom: 84px; right: 14px; }
+  .demo-panel { right: 12px; left: 12px; width: auto; bottom: 140px; }
+  .flow { grid-template-columns: 76px 34px 1fr; } .fl span { display: none; } .tankv { width: 34px; }
+  .evs li { grid-template-columns: 66px 1fr 70px; } .evs li > span:nth-child(3) { display: none; }
+}
+@media (max-width: 520px) {
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; } .mini { padding: 12px; } .mini b { font-size: 19px; }
+  .row3 { grid-template-columns: 1fr 1fr; }
+  .facts { grid-template-columns: 1fr; }
+  .hero h2 { font-size: 24px; }
+  .splash-in .loop { padding: 0 64px; } .loop-lbl b { font-size: 11.5px; } .loop-lbl span { display: none; }
+  .log li { grid-template-columns: 40px 1fr; } .log-k { display: none; }
+}
+
+/* ---------- 실물 연결 화면 (cl-live.jsx) ---------- */
+.live-status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.live-meta { font-size: 11.5px; color: var(--muted); }
+.live-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 12px; font-size: 13px; background: color-mix(in oklab, var(--warn) 16%, transparent); border: 1px solid color-mix(in oklab, var(--warn) 45%, transparent); }
+.live-banner b { color: var(--warn); }
+.live-banner .btn { margin-left: auto; }
+.live-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.live-log .log-x em { font-style: normal; color: var(--muted); font-size: 11.5px; }
+.live-log .log-x b { font-weight: 600; }
+.flow-src svg { color: var(--mint); }
+@media (max-width: 860px) {
+  .live-flow .dest-h > div > span, .live-flow .dest-v > span:not(.badge), .live-ai .ai-mode { display: none; }
+  .live-flow .flow-src small { display: none; }
+}
+@media (max-width: 860px) { .live-status .live { display: inline-flex; } }
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>/* Recharts 2.x의 React 18.3 defaultProps 경고만 숨김 */(function(){const o=console.error;console.error=function(...a){if(typeof a[0]==='string'&&a[0].includes('defaultProps'))return;o.apply(console,a);};})();</script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script>
+/* ============================================================
+   Carbon Loop — Core Engine
+   - DataSource 인터페이스: SimulatorSource / FirebaseSource
+   - Engine: AI 자동 제어 · 이상탐지 · 멀티 라우팅 · 토양 공급 판단
+   (Vite+TS 프로젝트의 src/core/* 와 1:1 대응)
+   ============================================================ */
+(function () {
+  // ---------- 상수 (가정값은 모두 여기로 분리) ----------
+  const CONST = {
+    PINE_KG_PER_YEAR: 6.6,          // 소나무 1그루 연간 흡수량(kg)
+    PINE_G_PER_DAY: 18,             // 6.6kg / 365일 ≈ 18g
+    AMBIENT: 420,                   // 외기 CO2 (ppm)
+    GH_G_TO_PPM: 28,                // 온실 20m³ 기준 CO2 1g ≈ 28ppm
+    MU_G_TO_PPM: 278,               // 버섯 챔버 2m³ 기준 CO2 1g ≈ 278ppm
+    TANK_CAP: 150,                  // 포집 저장 탱크 용량 (g)
+    TANK_RESERVE: 40,               // 온실·버섯용 예비량 (g) — 생체탄으로 보내지 않음
+    PUMP_MAX: 2.0,                  // 분배 매니폴드 최대 유량 (g/분)
+    GH_RATE: 2.0, MU_RATE: 1.5, BC_RATE: 1.5, // 라인별 정격 유량 (g/분)
+    AMEND_KG_PER_G: 0.006,          // 고정 CO2 1g당 토양개량제 생산량(kg)
+    SOC_PER_KG: 0.06,               // 개량제 1kg 투입 시 토양 유기탄소 지수 상승(%p)
+    TICK_MS: 500,                   // 시뮬레이터 송신 주기(실시간)
+    SERIES_BUCKET_MS: 5 * 60 * 1000 // 기록 그래프 5분 평균
+  };
+
+  const DEFAULT_SETTINGS = {
+    mode: 'auto', demo: true, speed: 10, dark: true,
+    low: 800, high: 1200, danger: 1500, targetMin: 900, targetMax: 1100,
+    muMin: 3000, muMax: 5000,
+    anomalyN: 20, anomalyK: 3.5,
+    soilMin: 30, soilMax: 60, socTarget: 2.4,
+    firebaseUrl: '', deviceId: 'campus-01', browserNotify: false
+  };
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const gauss = (x, m, s) => Math.exp(-((x - m) ** 2) / (2 * s * s));
+  const randn = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const hourOf = ts => { const d = new Date(ts); return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600; };
+  const pad = n => String(n).padStart(2, '0');
+  const dayKey = ts => { const d = new Date(ts); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  const hms = ts => { const d = new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+  const f0 = n => Math.round(n).toLocaleString('ko-KR');
+  const f1 = n => (Math.round(n * 10) / 10).toLocaleString('ko-KR');
+  const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
+  const stdev = a => { if (a.length < 2) return 0; const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1)); };
+  const median = a => { const b = [...a].sort((x, y) => x - y); const k = b.length >> 1; return b.length % 2 ? b[k] : (b[k - 1] + b[k]) / 2; };
+
+  /* ============================================================
+     SimulatorSource — ESP32와 동일한 JSON 패킷을 흉내 냄
+     ============================================================ */
+  class SimulatorSource {
+    constructor(deviceId) {
+      this.kind = 'simulator';
+      this.label = '시뮬레이터';
+      this.deviceId = deviceId || 'campus-01';
+      this.speed = 10; this.t = Date.now(); this.seq = 0; this.timer = null;
+      this.cmd = { ghValve: false, muValve: false, bcValve: false, fan: false };
+      this.s = {
+        gh: 960, temp: 22, hum: 64, mu: 3500, tank: 70, walk: 0,
+        bcFixed: 0, bcStock: 1.2, supplied: 0,
+        soil: [
+          { id: 'bed', name: '학내 화단', moisture: 46, soc: 2.2, dry: 0.012, water: 14 },
+          { id: 'roof', name: '옥상정원', moisture: 40, soc: 1.95, dry: 0.02, water: 22 }
+        ]
+      };
+      this.scn = { danger: 0, fault: 0, stuckVal: null, disconnect: 0, surge: 0 };
+      this.acc = { prod: 0, gh: 0, mu: 0, bc: 0, vent: 0 };
+    }
+    start(cb) { this.cb = cb; this.stop(); this.timer = setInterval(() => this.tick(), CONST.TICK_MS); }
+    stop() { if (this.timer) clearInterval(this.timer); this.timer = null; }
+    isRunning() { return !!this.timer; }
+    sendCommand(c) {
+      if (c.soilSupply) {
+        const { site, kg } = c.soilSupply;
+        const s = this.s.soil.find(x => x.id === site);
+        if (s) { const k = Math.min(kg, this.s.bcStock); this.s.bcStock -= k; s.soc += k * CONST.SOC_PER_KG; this.s.supplied += k; }
+      }
+      ['ghValve', 'muValve', 'bcValve', 'fan'].forEach(k => { if (k in c) this.cmd[k] = !!c[k]; });
+    }
+    trigger(name) {
+      const s = this.s, sc = this.scn;
+      if (name === 'danger') { sc.danger = 16; s.gh = Math.max(s.gh, 1000); }
+      if (name === 'fault') { sc.fault = 30; sc.stuckVal = null; }
+      if (name === 'disconnect') sc.disconnect = Math.ceil(12000 / CONST.TICK_MS);
+      if (name === 'surge') { s.gh = Math.min(s.gh, 770); s.mu = Math.min(s.mu, 2750); s.tank = Math.max(s.tank, 100); sc.surge = 140; }
+      if (name === 'reset') { sc.danger = sc.fault = sc.disconnect = sc.surge = 0; s.gh = 1000; s.mu = Math.max(s.mu, 3400); }
+    }
+    step(dt) {
+      const s = this.s, c = this.cmd, h = hourOf(this.t);
+      const light = Math.max(0, Math.sin(Math.PI * (h - 6) / 12));
+      // 1) 음식물 발효 CO2 생성 (점심·저녁 배출 피크 + 랜덤워크)
+      s.walk = clamp(s.walk + randn() * 0.02 * Math.sqrt(dt), -0.25, 0.25);
+      let prod = (0.22 + 0.34 * gauss(h, 13.5, 2.2) + 0.3 * gauss(h, 19.5, 2.2)) * (1 + s.walk) * Math.sqrt(s.temp / 22);
+      if (this.scn.surge > 0) prod += 1.2;
+      prod = Math.max(0, prod) * dt;
+      s.tank += prod; this.acc.prod += prod;
+      // 2) 매니폴드 분배 — 물리적 우선순위 온실 → 버섯 → 생체탄
+      let pump = CONST.PUMP_MAX * dt;
+      const take = want => { const g = Math.max(0, Math.min(want, s.tank, pump)); s.tank -= g; pump -= g; return g; };
+      const gh = c.ghValve ? take(CONST.GH_RATE * dt) : 0;
+      const mu = c.muValve ? take(CONST.MU_RATE * dt) : 0;
+      const bc = c.bcValve ? take(CONST.BC_RATE * dt) : 0;
+      if (s.tank > CONST.TANK_CAP) { this.acc.vent += s.tank - CONST.TANK_CAP; s.tank = CONST.TANK_CAP; }
+      this.acc.gh += gh; this.acc.mu += mu; this.acc.bc += bc;
+      // 3) 온실: 광합성 흡수 · 호흡 · 누기 · 환기 · 주입
+      const photo = 15 * light * clamp((s.gh - 250) / 800, 0, 1.5);
+      const resp = 2.2 * (1 - light) + 0.4;
+      const leak = (s.gh - CONST.AMBIENT) * 0.004;
+      const vent = c.fan ? (s.gh - CONST.AMBIENT) * 0.15 : 0;
+      s.gh = Math.max(CONST.AMBIENT, s.gh + (resp - photo - leak - vent) * dt + gh * CONST.GH_G_TO_PPM);
+      const tT = 19.5 + 6 * Math.sin(2 * Math.PI * (h - 9) / 24) - (c.fan ? 1.5 : 0);
+      const tH = 66 - 9 * Math.sin(2 * Math.PI * (h - 9) / 24) - (c.fan ? 8 : 0);
+      const a = Math.min(1, 0.06 * dt);
+      s.temp += (tT - s.temp) * a + randn() * 0.02; s.hum += (tH - s.hum) * a + randn() * 0.05;
+      // 4) 버섯 챔버: 자체 호흡 + 환기 손실
+      s.mu = Math.max(CONST.AMBIENT, s.mu + (5 - (s.mu - CONST.AMBIENT) * 0.012) * dt + mu * CONST.MU_G_TO_PPM);
+      // 5) 생체탄 반응기: 고정 → 토양개량제 재고
+      s.bcFixed += bc; s.bcStock += bc * CONST.AMEND_KG_PER_G;
+      // 6) 토양: 증발 건조 · 06:30 자동 관수 · 유기탄소 서서히 감소
+      const prevH = hourOf(this.t);
+      this.t += dt * 60000;
+      const nowH = hourOf(this.t);
+      s.soil.forEach(so => {
+        so.moisture -= so.dry * (0.4 + light) * dt;
+        const crossed = (prevH < 6.5 && nowH >= 6.5) || (nowH < prevH && nowH >= 6.5);
+        if (crossed) so.moisture += so.water;
+        if (so.moisture < 15) so.moisture += 20;
+        so.moisture = clamp(so.moisture, 5, 78);
+        so.soc = Math.max(1.2, so.soc - 0.000014 * dt);
+      });
+    }
+    tick() {
+      const dt = (CONST.TICK_MS / 1000) * this.speed / 60; // 분
+      if (this.scn.danger > 0) { this.s.gh += (1850 - this.s.gh) * 0.16; this.scn.danger--; }
+      this.step(dt);
+      if (this.scn.surge > 0) this.scn.surge--;
+      if (this.scn.disconnect > 0) { this.scn.disconnect--; return; } // 패킷 미송신
+      this.cb && this.cb(this.emit());
+    }
+    emit() {
+      const s = this.s, sc = this.scn;
+      let co2 = Math.round(s.gh + randn() * 4);
+      if (sc.fault > 0) {
+        if (sc.fault > 12) { if (sc.stuckVal == null) sc.stuckVal = co2; co2 = sc.stuckVal; }      // 값 멈춤
+        else if (sc.fault % 3 === 0) co2 = Math.round(s.gh + (Math.random() > .5 ? 1 : -1) * (520 + Math.random() * 480)); // 값 튐
+        sc.fault--;
+      }
+      const r = {
+        deviceId: this.deviceId, ts: this.t, seq: ++this.seq,
+        gh: { co2, temp: +s.temp.toFixed(1), hum: +s.hum.toFixed(1) },
+        mu: { co2: Math.round(s.mu + randn() * 15) },
+        tank: { g: +s.tank.toFixed(2) },
+        prodG: this.acc.prod,
+        flow: { gh: this.acc.gh, mu: this.acc.mu, bc: this.acc.bc }, ventG: this.acc.vent,
+        act: { ...this.cmd },
+        soil: s.soil.map(x => ({ id: x.id, name: x.name, moisture: +(x.moisture + randn() * 0.3).toFixed(1), soc: +x.soc.toFixed(3) })),
+        bc: { fixedG: s.bcFixed, stockKg: s.bcStock, suppliedKg: s.supplied },
+        rssi: Math.round(-58 + randn() * 3)
+      };
+      this.acc = { prod: 0, gh: 0, mu: 0, bc: 0, vent: 0 };
+      return r;
+    }
+    warmup(fromTs, minutes, cb) {
+      this.t = fromTs;
+      for (let i = 0; i < minutes; i++) { this.step(1); cb(this.emit()); }
+    }
+  }
+
+  /* ============================================================
+     FirebaseSource — Realtime Database REST 스트리밍 (SDK 불필요)
+     ESP32 → /devices/{id}/latest  ,  앱 → /devices/{id}/commands
+     ============================================================ */
+  class FirebaseSource {
+    constructor(url, deviceId) {
+      this.kind = 'firebase'; this.label = 'Firebase';
+      this.url = (url || '').replace(/\/$/, ''); this.deviceId = deviceId || 'campus-01';
+      this.es = null; this.error = null; this.speed = 1;
+    }
+    start(cb) {
+      this.stop();
+      if (!this.url) { this.error = 'Firebase URL이 설정되지 않았어요.'; return; }
+      try {
+        this.es = new EventSource(`${this.url}/devices/${this.deviceId}/latest.json`);
+        const onData = e => { try { const d = JSON.parse(e.data); if (d && d.data && d.path === '/') cb(normalizePacket(d.data)); } catch (err) { this.error = String(err); } };
+        this.es.addEventListener('put', onData);
+        this.es.addEventListener('patch', onData);
+        this.es.onerror = () => { this.error = '스트림 연결 오류 — URL·보안 규칙을 확인해주세요.'; };
+      } catch (err) { this.error = String(err); }
+    }
+    stop() { if (this.es) this.es.close(); this.es = null; }
+    isRunning() { return !!this.es; }
+    sendCommand(c) {
+      if (!this.url) return;
+      fetch(`${this.url}/devices/${this.deviceId}/commands.json`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...c, issuedAt: Date.now() })
+      }).catch(() => {});
+    }
+    trigger() {}
+  }
+  // ESP32가 일부 필드만 보낼 때 기본값으로 보정 (버섯·토양은 시뮬레이션 대체 가능)
+  function normalizePacket(p) {
+    return {
+      deviceId: p.deviceId, ts: p.ts && p.ts > 1e12 ? p.ts : Date.now(), seq: p.seq || 0,
+      gh: { co2: +p.co2 || +(p.gh && p.gh.co2) || 0, temp: +p.temp || +(p.gh && p.gh.temp) || 0, hum: +p.hum || +(p.gh && p.gh.hum) || 0 },
+      mu: { co2: +(p.mu && p.mu.co2) || 3500 },
+      tank: { g: +(p.tank && p.tank.g) || 60 },
+      prodG: +p.prodG || 0, flow: { gh: +(p.flow && p.flow.gh) || 0, mu: +(p.flow && p.flow.mu) || 0, bc: +(p.flow && p.flow.bc) || 0 }, ventG: 0,
+      act: { ghValve: !!(p.act ? p.act.ghValve : p.valve), muValve: !!(p.act && p.act.muValve), bcValve: !!(p.act && p.act.bcValve), fan: !!(p.act ? p.act.fan : p.fan) },
+      soil: p.soil || [{ id: 'bed', name: '학내 화단', moisture: +p.soilMoisture || 45, soc: 2.2 }],
+      bc: p.bc || { fixedG: 0, stockKg: 0, suppliedKg: 0 }, rssi: p.rssi || 0
+    };
+  }
+
+  /* ============================================================
+     Engine — AI 판단 (앱/서버 측). 모든 결정은 한 줄 문장으로 기록.
+     ============================================================ */
+  class Engine {
+    constructor(settings) {
+      this.settings = { ...DEFAULT_SETTINGS, ...(settings || {}) };
+      this.listeners = new Set(); this.alertListeners = new Set();
+      this.source = null; this.reset();
+      this.watch = setInterval(() => this.checkConnection(), 1000);
+    }
+    reset() {
+      this.latest = null; this.val = null; this.lastRecvReal = 0; this.lastRecvTs = 0;
+      this.connected = false; this.everConnected = false; this.silent = false; this.seq = 0;
+      this.win = []; this.anomaly = { status: 'normal', type: null, detail: '', mean: 0, std: 0, holdUntil: 0 };
+      this.cmd = { ghValve: false, muValve: false, bcValve: false, fan: false };
+      this.manual = { ghValve: false, muValve: false, bcValve: false, fan: false };
+      this.decision = { text: '데이터를 기다리는 중이에요.', level: 'info', rule: '—', ts: 0 };
+      this.log = []; this.events = []; this.openEv = {}; this.alerts = [];
+      this.series = []; this.bucket = null; this.recent = []; this.daily = {};
+      this.totals = { captured: 0, injected: 0, gh: 0, mu: 0, bc: 0, vent: 0 };
+      this.route = { gh: { score: 0, met: false }, mu: { score: 0, met: false }, bc: { score: 0, met: false } };
+      this.dangerActive = false; this.nextSoilCheck = 0; this.bcSession = 0;
+      this.lastHour = null; this.hourAcc = { gh: 0, mu: 0, bc: 0 }; this.soilState = {};
+    }
+    // ---- pub/sub ----
+    subscribe(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
+    onAlert(fn) { this.alertListeners.add(fn); return () => this.alertListeners.delete(fn); }
+    emit() { if (!this.silent) this.listeners.forEach(f => f()); }
+    setSettings(p) { this.settings = { ...this.settings, ...p }; try { localStorage.setItem('cl.settings', JSON.stringify(this.settings)); } catch (e) {} if (this.source && 'speed' in p) this.source.speed = p.speed; this.emit(); }
+    setManual(p) { Object.assign(this.manual, p); if (this.settings.mode === 'manual') { Object.assign(this.cmd, p); this.source && this.source.sendCommand({ ...this.cmd }); this.addLog('control', 'info', `수동 제어: ${Object.entries(p).map(([k, v]) => `${LABEL[k]} ${v ? (k === 'fan' ? '작동' : '열림') : (k === 'fan' ? '대기' : '닫힘')}`).join(', ')}`); } this.emit(); }
+    addLog(kind, level, text, ts) { const e = { id: Math.random().toString(36).slice(2), ts: ts || (this.latest ? this.latest.ts : Date.now()), kind, level, text }; this.log.unshift(e); if (this.log.length > 500) this.log.length = 500; return e; }
+    pushAlert(level, title, body, kind) {
+      if (this.silent) return;
+      const a = { id: Math.random().toString(36).slice(2), ts: this.latest ? this.latest.ts : Date.now(), real: Date.now(), level, title, body, kind, read: false };
+      this.alerts.unshift(a); if (this.alerts.length > 100) this.alerts.length = 100;
+      this.alertListeners.forEach(f => f(a));
+    }
+    // ---- 연결 감시 ----
+    checkConnection() {
+      if (!this.source) return;
+      const timeout = this.source.kind === 'simulator' ? 3000 : 15000;
+      if (this.connected && Date.now() - this.lastRecvReal > timeout) {
+        this.connected = false;
+        const t = this.lastRecvTs ? hms(this.lastRecvTs) : '—';
+        this.addLog('conn', 'danger', `기기 신호가 ${timeout / 1000}초 넘게 없어 연결 끊김으로 판단했어요. 마지막 명령을 유지해요.`);
+        this.decision = { text: `연결이 끊겨 새 판단을 멈췄어요. ESP32는 자체 안전 규칙(밸브 닫힘)으로 동작해요.`, level: 'danger', rule: `수신 없음 > ${timeout / 1000}초`, ts: this.lastRecvTs };
+        this.pushAlert('danger', '기기 연결 끊김', `ESP32 신호가 없어요 · 마지막 수신 ${t}. 전원과 Wi-Fi를 확인해주세요.`, 'conn');
+        this.emit();
+      }
+    }
+    // ---- 이상탐지: 이동평균·표준편차 + 중앙값 필터 ----
+    detect(raw) {
+      const S = this.settings, w = this.win, N = S.anomalyN;
+      const m = mean(w), sd = stdev(w);
+      const diffs = []; for (let i = 1; i < w.length; i++) diffs.push(Math.abs(w[i] - w[i - 1]));
+      const md = mean(diffs), sdd = stdev(diffs);
+      // 임계: K·σ(σ 하한 25ppm = MH-Z19B 노이즈 고려) + 최근 평균 변화량(배속·환기 중 빠른 변화 허용)
+      const thr = S.anomalyK * Math.max(sdd, 25) + md * 1.5;
+      const prev = w.length ? w[w.length - 1] : raw;
+      let type = null, detail = '', use = raw;
+      if (this._skipSpike > 0) this._skipSpike--;
+      else if (w.length >= 5 && Math.abs(raw - prev) > thr && Math.abs(raw - m) > S.anomalyK * Math.max(sd, 25)) {
+        if (this._pend != null && Math.sign(raw - prev) === Math.sign(this._pend - prev)) { this._pend = null; } // 같은 방향으로 연속 → 실제 추세로 인정
+        else { this._pend = raw; type = 'spike'; use = prev; detail = `${f0(raw)}ppm이 이동평균(${f0(m)}±${f0(sd)})에서 ${f0(Math.abs(raw - prev))}ppm 튀었어요`; }
+      } else this._pend = null;
+      const sN = Math.min(12, N), tail = [...w.slice(-(sN - 1)), raw];
+      if (tail.length >= sN && Math.max(...tail) - Math.min(...tail) < 0.5) {
+        type = 'stuck'; detail = `${sN}회 연속 같은 값(${f0(raw)}ppm)이 들어왔어요`;
+      }
+      if (type !== 'spike') { w.push(raw); if (w.length > N) w.splice(0, w.length - N); }
+      const pa = this.anomaly;
+      if (type) {
+        if (pa.status !== 'anomaly' || pa.type !== type) {
+          const title = type === 'stuck' ? '센서 이상 징후 · 값 멈춤' : '센서 이상 징후 · 값 튐';
+          this.addLog('sensor', 'warn', `이상 징후: ${detail}.`);
+          this.pushAlert('warn', title, `${detail}. 이상값은 제어에서 제외했어요.`, 'sensor');
+        }
+        this.anomaly = { status: 'anomaly', type, detail, mean: m, std: sd, holdUntil: this.seq + 10 };
+      } else if (pa.status === 'anomaly' && this.seq > pa.holdUntil) {
+        this.anomaly = { status: 'normal', type: null, detail: '', mean: m, std: sd, holdUntil: 0 };
+        this.addLog('sensor', 'ok', `센서 값이 다시 안정돼 정상으로 판단했어요 (σ ${f1(sd)}ppm).`);
+      } else { this.anomaly = { ...pa, mean: m, std: sd }; }
+      return { type, use, mean: m, std: sd };
+    }
+    trigger(name) {
+      if (!this.source) return;
+      this.source.trigger(name);
+      const L = { danger: '위험 상황 재현', fault: '센서 고장 재현', disconnect: '연결 끊김 재현', surge: '포집 과잉 재현', reset: '정상 상태로 복귀' };
+      if (name === 'surge' || name === 'reset') { this.win = []; this._pend = null; }
+      if (name === 'danger') this._skipSpike = 18; // 시나리오 급상승은 추세 변화로 간주
+      if (name === 'reset') { this.anomaly = { status: 'normal', type: null, detail: '', mean: 0, std: 0, holdUntil: 0 }; }
+      this.addLog('demo', 'info', `[시연] ${L[name]} 시나리오를 시작했어요.`);
+      this.emit();
+    }
+    // ---- 메인 처리 ----
+    process(r) {
+      const S = this.settings;
+      this.latest = r; this.seq++; this.lastRecvTs = r.ts;
+      if (!this.silent) {
+        this.lastRecvReal = Date.now();
+        if (!this.connected) {
+          if (this.everConnected) { this.pushAlert('ok', '기기 재연결', 'ESP32와 다시 연결됐어요. 데이터 수신을 재개해요.', 'conn'); this.addLog('conn', 'ok', '기기와 다시 연결돼 판단을 재개했어요.'); }
+          this.everConnected = true;
+        }
+        this.connected = true;
+      }
+      // 누적·일별 집계
+      const dk = dayKey(r.ts);
+      const d = this.daily[dk] || (this.daily[dk] = { captured: 0, gh: 0, mu: 0, bc: 0, vent: 0, sum: 0, n: 0, inBand: 0, min: 1e9, max: 0 });
+      d.captured += r.prodG; d.gh += r.flow.gh; d.mu += r.flow.mu; d.bc += r.flow.bc; d.vent += r.ventG || 0;
+      const T = this.totals; T.captured += r.prodG; T.gh += r.flow.gh; T.mu += r.flow.mu; T.bc += r.flow.bc; T.injected = T.gh + T.mu; T.vent += r.ventG || 0;
+      this.hourAcc.gh += r.flow.gh; this.hourAcc.mu += r.flow.mu; this.hourAcc.bc += r.flow.bc;
+      if (r.act.bcValve) this.bcSession += r.flow.bc;
+      // 주입 이벤트 (실제 액추에이터 상태 기준)
+      [['gh', 'ghValve'], ['mu', 'muValve'], ['bc', 'bcValve']].forEach(([k, a]) => {
+        const on = r.act[a], ev = this.openEv[k];
+        if (on && !ev) this.openEv[k] = { dest: k, start: r.ts, grams: r.flow[k] };
+        else if (on && ev) ev.grams += r.flow[k];
+        else if (!on && ev) { ev.end = r.ts; ev.minutes = (ev.end - ev.start) / 60000; this.events.unshift(ev); if (this.events.length > 300) this.events.length = 300; delete this.openEv[k]; }
+      });
+      // 이상탐지 & 필터값
+      const A = this.detect(r.gh.co2); const v = A.use; this.val = v;
+      d.sum += v; d.n++; if (v >= S.targetMin && v <= S.targetMax) d.inBand++; d.min = Math.min(d.min, v); d.max = Math.max(d.max, v);
+      this.recent.push({ ts: r.ts, v: r.gh.co2, f: v }); if (this.recent.length > 240) this.recent.shift();
+      // 5분 평균 시계열
+      const bk = Math.floor(r.ts / CONST.SERIES_BUCKET_MS);
+      if (!this.bucket || this.bucket.k !== bk) {
+        if (this.bucket && this.bucket.n) { const b = this.bucket; this.series.push({ ts: b.k * CONST.SERIES_BUCKET_MS, gh: b.gh / b.n, mu: b.mu / b.n, temp: b.t / b.n, hum: b.h / b.n }); if (this.series.length > 2016) this.series.shift(); }
+        this.bucket = { k: bk, gh: 0, mu: 0, t: 0, h: 0, n: 0 };
+      }
+      const b = this.bucket; b.gh += v; b.mu += r.mu.co2; b.t += r.gh.temp; b.h += r.gh.hum; b.n++;
+
+      this.control(r, v, A);
+      this.routing(r, v);
+      this.soil(r);
+      this.source && this.source.sendCommand({ ...this.cmd });
+      this.emit();
+    }
+    // ---- 1) 온실 CO2 자동 제어 (800 / 1200 / 1500 규칙) ----
+    control(r, v, A) {
+      const S = this.settings, c = this.cmd, V = `${f0(v)}ppm`;
+      let text = '', level = 'ok', rule = '';
+      const lowFlow = c.ghValve && r.act.ghValve && r.flow.gh < CONST.GH_RATE * 0.3 * ((CONST.TICK_MS / 1000) * (this.source ? this.source.speed : 1) / 60);
+      if (S.mode === 'manual') {
+        Object.assign(c, this.manual);
+        if (v > S.danger && A.type !== 'stuck') { if (!c.fan) this.addLog('safety', 'danger', `수동 모드지만 ${V}로 위험 기준을 넘어 안전 인터락이 쿨링팬을 켰어요.`); c.fan = true; if (!this.dangerActive) this.pushAlert('danger', `CO₂ 위험 농도 ${f0(v)}ppm`, '안전 인터락으로 쿨링팬 환기를 시작했어요.', 'danger'); this.dangerActive = true; }
+        else if (this.dangerActive && v <= S.high) this.dangerActive = false;
+        const rec = v < S.low ? '주입 시작 권장' : v > S.high ? '주입 중지 권장' : (v >= S.targetMin && v <= S.targetMax ? '현 상태 유지 권장' : '관찰 권장');
+        this.decision = { text: `수동 모드예요. 현재 ${V} — AI 권고: ${rec}.`, level: v > S.danger ? 'danger' : 'info', rule: '수동 모드 · 안전 인터락만 자동', ts: r.ts };
+        return;
+      }
+      const open = (t) => { if (!c.ghValve) { c.ghValve = true; this.addLog('control', 'warn', t); return true; } return false; };
+      const close = (t) => { if (c.ghValve) { c.ghValve = false; this.addLog('control', 'info', t); return true; } return false; };
+      if (A.type === 'stuck') {
+        close(`센서 멈춤 의심 — 잘못된 값으로 주입하지 않도록 밸브를 닫았어요.`);
+        text = `${this.anomaly.detail}. 센서 멈춤이 의심돼 주입을 보류하고 밸브를 닫았어요.`; level = 'warn'; rule = '이상탐지: 값 멈춤 → 안전 보류';
+      } else if (v > S.danger) {
+        c.ghValve = false;
+        if (!c.fan) { c.fan = true; this.addLog('safety', 'danger', `현재 ${V}, 위험 기준 ${f0(S.danger)}을 넘어 쿨링팬 환기를 시작했어요.`); }
+        if (!this.dangerActive) this.pushAlert('danger', `CO₂ 위험 농도 ${f0(v)}ppm`, `위험 기준(${f0(S.danger)}ppm)을 넘어 밸브를 잠그고 쿨링팬 환기를 시작했어요.`, 'danger');
+        this.dangerActive = true;
+        text = `현재 ${V}, 위험 기준 ${f0(S.danger)}을 넘어 밸브를 잠그고 환기 중이에요.`; level = 'danger'; rule = `> ${f0(S.danger)} → 환기 + 알림`;
+      } else if (c.fan && v <= S.high) {
+        c.fan = false; this.dangerActive = false;
+        this.addLog('safety', 'ok', `환기로 ${V}까지 내려가 쿨링팬을 멈췄어요.`);
+        text = `환기로 ${V}까지 내려가 쿨링팬을 멈췄어요.`; level = 'ok'; rule = `≤ ${f0(S.high)} → 팬 정지`;
+      } else if (c.fan) {
+        text = `환기 중 — 현재 ${V}. ${f0(S.high)}ppm 이하가 되면 팬을 멈춰요.`; level = 'danger'; rule = `환기 유지 (≤ ${f0(S.high)}에서 정지)`;
+      } else if (v < S.low) {
+        const did = open(`현재 ${V}, 목표보다 낮아 주입을 시작했어요.`);
+        text = did ? `현재 ${V}, 목표보다 낮아 주입을 시작했어요.` : `현재 ${V}, 목표보다 낮아 주입 중이에요.`; level = 'warn'; rule = `< ${f0(S.low)} → 밸브 열림`;
+      } else if (v > S.high) {
+        const did = close(`현재 ${V}, 상한 ${f0(S.high)}을 넘어 과다 방지를 위해 밸브를 닫았어요.`);
+        text = did ? `현재 ${V}, 상한을 넘어 밸브를 닫았어요.` : `현재 ${V}, 상한보다 높아 주입을 멈추고 식물 흡수를 기다려요.`; level = 'warn'; rule = `> ${f0(S.high)} → 밸브 닫힘`;
+      } else {
+        rule = `${f0(S.low)}~${f0(S.high)} → 이전 상태 유지`;
+        if (c.ghValve) { text = `현재 ${V}, 주입을 이어가요. ${f0(S.high)}ppm을 넘으면 닫을게요.`; level = 'ok'; }
+        else if (v >= S.targetMin && v <= S.targetMax) { text = `현재 ${V}, 목표 구간(${f0(S.targetMin)}~${f0(S.targetMax)})이라 그대로 유지해요.`; level = 'ok'; rule = `목표 ${f0(S.targetMin)}~${f0(S.targetMax)} → 유지`; }
+        else if (v < S.targetMin) { text = `현재 ${V}, 목표보다 조금 낮아요. ${f0(S.low)}ppm 미만이 되면 주입할게요.`; level = 'ok'; }
+        else { text = `현재 ${V}, 목표보다 약간 높아요. 식물이 흡수하며 내려가는 중이에요.`; level = 'ok'; }
+      }
+      if (A.type === 'spike') text = `튄 값 ${f0(r.gh.co2)}ppm은 제외하고 직전 정상값으로 판단했어요. ` + text;
+      if (lowFlow && c.ghValve) text += ' (저장 탱크 잔량이 적어 주입량이 제한돼요)';
+      this.decision = { text, level, rule, ts: r.ts };
+    }
+    // ---- 2) 멀티 라우팅: 온실 → 버섯 → 생체탄 ----
+    routing(r, v) {
+      const S = this.settings, c = this.cmd, mu = r.mu.co2, tank = r.tank.g;
+      const ghMid = (S.targetMin + S.targetMax) / 2, muMid = (S.muMin + S.muMax) / 2, muStop = S.muMax - 500;
+      this.route.gh = { score: Math.round(clamp((ghMid - v) / (ghMid - CONST.AMBIENT) * 100, 0, 100)), met: v >= S.targetMin && v <= S.high, want: c.ghValve };
+      this.route.mu = { score: Math.round(clamp((muMid - mu) / (muMid - CONST.AMBIENT) * 100, 0, 100)), met: mu >= S.muMin && mu <= S.muMax, want: c.muValve };
+      const surplus = Math.max(0, tank - CONST.TANK_RESERVE);
+      this.route.bc = { score: Math.round(clamp(surplus / (CONST.TANK_CAP - CONST.TANK_RESERVE) * 100, 0, 100)), met: true, want: c.bcValve, surplus };
+      if (S.mode === 'auto') {
+        if (c.ghValve && !this._ghPrev) this.addLog('route', 'info', `온실 수요 점수 ${this.route.gh.score} — 1순위로 CO₂를 배정해요.`);
+        if (c.ghValve && c.muValve) {
+          c.muValve = false; this.addLog('route', 'info', `온실 수요가 생겨 버섯 공급을 잠시 멈추고 온실(1순위)로 먼저 보내요.`);
+        } else if (!c.muValve && mu < S.muMin && c.ghValve) {
+          if (!this._muWait) { this._muWait = true; this.addLog('route', 'info', `버섯 챔버 ${f0(mu)}ppm(수요 ${this.route.mu.score}) — 온실이 1순위라 온실 충족 후 보낼게요.`); }
+        } else if (!c.muValve && mu < S.muMin) {
+          c.muValve = true; this._muWait = false;
+          this.addLog('route', 'info', `온실 목표 충족 — 버섯 챔버 ${f0(mu)}ppm(수요 ${this.route.mu.score})이라 다음 순위로 공급을 시작해요.`);
+        } else if (c.muValve && mu > muStop) {
+          c.muValve = false; this.addLog('route', 'ok', `버섯 챔버 ${f0(mu)}ppm 도달 — 목표(${f0(S.muMin)}~${f0(S.muMax)}) 충족으로 밸브를 닫았어요.`);
+        }
+        const bothMet = !c.ghValve && !c.muValve;
+        if (!c.bcValve && ((bothMet && surplus > 15) || tank > CONST.TANK_CAP * 0.9)) {
+          c.bcValve = true; this.bcSession = 0;
+          this.addLog('route', 'info', bothMet ? `온실·버섯 목표 충족 — 탱크 여분 ${f0(surplus)}g을 생체탄 반응기로 돌려요.` : `저장 탱크 ${f0(tank / CONST.TANK_CAP * 100)}% — 넘치기 전에 과잉분을 생체탄 반응기로 보내요.`);
+        } else if (c.bcValve && (tank <= CONST.TANK_RESERVE || (!bothMet && tank < CONST.TANK_CAP * 0.8))) {
+          c.bcValve = false;
+          this.addLog('route', 'ok', bothMet ? `온실·버섯 목표 충족, 여분 ${f1(this.bcSession)}g을 생체탄 반응기로 보냈어요.` : `${c.ghValve ? '온실' : '버섯'} 수요가 다시 생겨 생체탄 공급을 멈췄어요 (여분 ${f1(this.bcSession)}g 고정 완료).`);
+        }
+      }
+      this._ghPrev = c.ghValve;
+      const hr = new Date(r.ts).getHours();
+      if (this.lastHour !== null && hr !== this.lastHour) {
+        const h = this.hourAcc, tot = h.gh + h.mu + h.bc;
+        if (tot > 0.5) this.addLog('route', 'summary', `지난 1시간 분배 — 온실 ${f1(h.gh)}g · 버섯 ${f1(h.mu)}g · 생체탄 ${f1(h.bc)}g`);
+        this.hourAcc = { gh: 0, mu: 0, bc: 0 };
+      }
+      this.lastHour = hr;
+    }
+    // ---- 3) 바이오차·토양개량제 공급 판단 (3시간마다) ----
+    soil(r) {
+      if (r.ts < this.nextSoilCheck) return;
+      this.nextSoilCheck = r.ts + 6 * 3600e3;
+      const S = this.settings; let stock = r.bc.stockKg;
+      (r.soil || []).forEach(so => {
+        const n = so.name, m = f0(so.moisture), soc = so.soc.toFixed(2);
+        let st, text, level = 'info';
+        if (so.soc >= S.socTarget) { st = 'ok'; text = `${n} 유기탄소 ${soc}% — 목표 이상이라 공급하지 않아요.`; }
+        else if (so.moisture < S.soilMin) { st = 'dry'; level = 'warn'; text = `${n} 수분 ${m}% — 너무 건조해 개량제가 날릴 수 있어 공급을 보류했어요.`; }
+        else if (so.moisture > S.soilMax) { st = 'wet'; level = 'warn'; text = `${n} 수분 ${m}% — 과습해 뭉칠 수 있어 공급을 보류했어요.`; }
+        else if (stock < 0.1) { st = 'stock'; level = 'warn'; text = `${n}은 공급 적기지만 개량제 재고(${stock.toFixed(2)}kg)가 부족해 다음 회차로 미뤘어요.`; }
+        else {
+          const kg = Math.round(Math.min(stock, (S.socTarget - so.soc) * 1.5, 0.3) * 100) / 100;
+          stock -= kg; st = 'supply'; level = 'ok';
+          this.source && this.source.sendCommand({ soilSupply: { site: so.id, kg } });
+          text = `${n} 수분 ${m}%·유기탄소 ${soc}% — 적정 조건이라 개량제 ${kg}kg을 공급했어요.`;
+        }
+        this.soilState[so.id] = { st, ts: r.ts };
+        this.addLog('soil', level, text);
+      });
+    }
+    // ---- 소스 전환 ----
+    attach(src, opts) {
+      if (this.source) this.source.stop();
+      this.source = src; src.speed = this.settings.speed;
+      if (opts && opts.warmupDays && src.warmup) {
+        this.silent = true;
+        src.warmup(Date.now() - opts.warmupDays * 86400e3, opts.warmupDays * 1440, r => this.process(r));
+        this.silent = false; this.lastRecvReal = Date.now(); this.connected = true; this.everConnected = true;
+      }
+      src.start(r => this.process(r));
+      this.emit();
+    }
+    today() { return this.daily[dayKey(this.latest ? this.latest.ts : Date.now())] || { captured: 0, gh: 0, mu: 0, bc: 0, vent: 0, n: 0, sum: 0, inBand: 0 }; }
+  }
+  const LABEL = { ghValve: '온실 밸브', muValve: '버섯 밸브', bcValve: '생체탄 밸브', fan: '쿨링팬' };
+
+  function loadSettings() { try { return JSON.parse(localStorage.getItem('cl.settings') || '{}'); } catch (e) { return {}; } }
+
+  window.CL = { CONST, DEFAULT_SETTINGS, SimulatorSource, FirebaseSource, Engine, normalizePacket, loadSettings, util: { dayKey, hms, pad, f0, f1, mean, median } };
+})();
+
+</script>
+<script>
+/* cl-ui.jsx (JSX 미리 변환됨) */
+/* Carbon Loop — 공통 UI 컴포넌트 (src/components/* 에 대응) */
+const {
+  useState,
+  useEffect,
+  useReducer,
+  useRef,
+  useMemo,
+  useCallback
+} = React;
+const RC = window.Recharts || {};
+const U = CL.util;
+function useEngine() {
+  const eng = window.clEngine;
+  const [, force] = useReducer(x => x + 1, 0);
+  useEffect(() => eng.subscribe(force), [eng]);
+  return eng;
+}
+function useNow(ms = 1000) {
+  const [n, set] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => set(Date.now()), ms);
+    return () => clearInterval(t);
+  }, [ms]);
+  return n;
+}
+
+/* ---------- 아이콘 (단순 기하 라인) ---------- */
+const ICONS = {
+  home: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 11l8-7 8 7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M6 10v10h12V10"
+  })),
+  chart: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M4 20V4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M4 20h16"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M7 15l4-4 3 3 5-6"
+  })),
+  route: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "6",
+    cy: "12",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "18",
+    cy: "5",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "18",
+    cy: "12",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "18",
+    cy: "19",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8.5 12h7M8 11l8-5M8 13l8 5"
+  })),
+  leaf: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M5 19c0-8 5-14 15-14 0 10-6 15-14 15"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M5 19l7-7"
+  })),
+  bell: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M10 20.5a2 2 0 004 0"
+  })),
+  gear: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "3"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"
+  })),
+  info: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "9"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 11v6M12 7.5v.5"
+  })),
+  play: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M8 5l11 7-11 7z"
+  })),
+  close: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M6 6l12 12M18 6L6 18"
+  })),
+  share: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "6",
+    cy: "12",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "18",
+    cy: "6",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "18",
+    cy: "18",
+    r: "2.5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"
+  })),
+  download: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M12 4v11M7 10l5 5 5-5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M5 20h14"
+  })),
+  plus: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M12 5v14M5 12h14"
+  })),
+  moon: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M19 14.5A7.5 7.5 0 019.5 5a7.5 7.5 0 109.5 9.5z"
+  })),
+  sun: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"
+  })),
+  flask: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3"
+  })),
+  pin: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12z"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "9",
+    r: "2.5"
+  })),
+  arrow: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M5 12h14M13 6l6 6-6 6"
+  })),
+  wifi: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+    d: "M3 9a13 13 0 0118 0M6 12.5a8.5 8.5 0 0112 0M9 16a4 4 0 016 0"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "19",
+    r: "1"
+  }))
+};
+function Icon({
+  name,
+  size = 18,
+  stroke = 1.8,
+  style
+}) {
+  return /*#__PURE__*/React.createElement("svg", {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: stroke,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    style: style,
+    "aria-hidden": "true"
+  }, ICONS[name]);
+}
+function Logo({
+  size = 28
+}) {
+  return /*#__PURE__*/React.createElement("svg", {
+    width: size,
+    height: size,
+    viewBox: "0 0 32 32",
+    "aria-label": "\uCE74\uBCF8\uB8E8\uD504"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "16",
+    cy: "16",
+    r: "11",
+    fill: "none",
+    stroke: "var(--mint)",
+    strokeWidth: "4",
+    strokeDasharray: "52 17",
+    strokeLinecap: "round",
+    transform: "rotate(-60 16 16)"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "16",
+    cy: "16",
+    r: "3.4",
+    fill: "var(--mint)"
+  }));
+}
+
+/* ---------- 기본 프리미티브 ---------- */
+function Card({
+  title,
+  sub,
+  right,
+  children,
+  className = '',
+  style,
+  id
+}) {
+  return /*#__PURE__*/React.createElement("section", {
+    className: 'card ' + className,
+    style: style,
+    id: id
+  }, (title || right) && /*#__PURE__*/React.createElement("header", {
+    className: "card-h"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, title), sub && /*#__PURE__*/React.createElement("p", {
+    className: "card-sub"
+  }, sub)), right), children);
+}
+function Badge({
+  tone = 'mute',
+  children,
+  dot
+}) {
+  return /*#__PURE__*/React.createElement("span", {
+    className: 'badge b-' + tone
+  }, dot && /*#__PURE__*/React.createElement("i", {
+    className: "bdot"
+  }), children);
+}
+function Toggle({
+  on,
+  onChange,
+  disabled
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    className: 'tgl' + (on ? ' on' : ''),
+    disabled: disabled,
+    onClick: () => onChange(!on),
+    role: "switch",
+    "aria-checked": on
+  }, /*#__PURE__*/React.createElement("i", null));
+}
+function Seg({
+  value,
+  options,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "seg"
+  }, options.map(o => /*#__PURE__*/React.createElement("button", {
+    key: String(o.v),
+    className: value === o.v ? 'on' : '',
+    onClick: () => onChange(o.v)
+  }, o.l)));
+}
+function Stat({
+  label,
+  value,
+  unit,
+  tone,
+  small
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'stat' + (small ? ' sm' : '')
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-l"
+  }, label), /*#__PURE__*/React.createElement("div", {
+    className: 'stat-v' + (tone ? ' t-' + tone : '')
+  }, value, /*#__PURE__*/React.createElement("span", {
+    className: "unit"
+  }, unit)));
+}
+const levelTone = l => ({
+  ok: 'ok',
+  info: 'info',
+  warn: 'warn',
+  danger: 'danger',
+  summary: 'mute'
+})[l] || 'mute';
+function ppmStatus(v, S) {
+  if (v == null) return {
+    tone: 'mute',
+    label: '대기'
+  };
+  if (v > S.danger) return {
+    tone: 'danger',
+    label: '위험'
+  };
+  if (v >= S.targetMin && v <= S.targetMax) return {
+    tone: 'ok',
+    label: ''
+  };
+  if (v < S.targetMin) return {
+    tone: 'warn',
+    label: v < S.low ? '주의 · 부족' : '주의 · 약간 낮음'
+  };
+  return {
+    tone: 'warn',
+    label: v > S.high ? '주의 · 과다' : '주의 · 약간 높음'
+  };
+}
+
+/* ---------- CO₂ 게이지 ---------- */
+function Gauge({
+  value,
+  S,
+  size = 260
+}) {
+  const MIN = 400,
+    MAX = 2000,
+    SW = 240,
+    R = 100,
+    cx = 120,
+    cy = 120;
+  const ang = v => -120 + (Math.max(MIN, Math.min(MAX, v)) - MIN) / (MAX - MIN) * SW;
+  const pt = a => [cx + R * Math.sin(a * Math.PI / 180), cy - R * Math.cos(a * Math.PI / 180)];
+  const arc = (a0, a1, r = R) => {
+    const p0 = [cx + r * Math.sin(a0 * Math.PI / 180), cy - r * Math.cos(a0 * Math.PI / 180)],
+      p1 = [cx + r * Math.sin(a1 * Math.PI / 180), cy - r * Math.cos(a1 * Math.PI / 180)];
+    return `M${p0[0]} ${p0[1]} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${p1[0]} ${p1[1]}`;
+  };
+  const st = ppmStatus(value, S);
+  const segs = [[MIN, S.targetMin, 'warn'], [S.targetMin, S.targetMax, 'ok'], [S.targetMax, S.danger, 'warn'], [S.danger, MAX, 'danger']];
+  const v = value == null ? MIN : value,
+    [nx, ny] = pt(ang(v));
+  const ticks = [400, S.low, S.targetMin, S.targetMax, S.high, S.danger, 2000];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "gauge",
+    style: {
+      width: size,
+      maxWidth: '100%'
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "-22 -18 284 196",
+    width: "100%"
+  }, segs.map(([a, b, t], i) => /*#__PURE__*/React.createElement("path", {
+    key: i,
+    d: arc(ang(a) + 0.8, ang(b) - 0.8),
+    stroke: `var(--${t})`,
+    strokeOpacity: ".22",
+    strokeWidth: "16",
+    fill: "none"
+  })), segs.map(([a, b, t], i) => v > a && /*#__PURE__*/React.createElement("path", {
+    key: 'f' + i,
+    d: arc(ang(a) + 0.8, Math.max(ang(a) + 0.9, ang(Math.min(v, b)) - (v >= b ? 0.8 : 0))),
+    stroke: `var(--${t})`,
+    strokeWidth: "16",
+    fill: "none"
+  })), ticks.map((t, i) => {
+    const a = ang(t);
+    const [x1, y1] = [cx + 116 * Math.sin(a * Math.PI / 180), cy - 116 * Math.cos(a * Math.PI / 180)];
+    const [x2, y2] = [cx + 122 * Math.sin(a * Math.PI / 180), cy - 122 * Math.cos(a * Math.PI / 180)];
+    return /*#__PURE__*/React.createElement("line", {
+      key: i,
+      x1: x1,
+      y1: y1,
+      x2: x2,
+      y2: y2,
+      stroke: "var(--muted)",
+      strokeWidth: "1.2"
+    });
+  }), [S.low, S.high, S.danger].map((t, i) => {
+    const a = ang(t);
+    return /*#__PURE__*/React.createElement("text", {
+      key: i,
+      x: cx + 134 * Math.sin(a * Math.PI / 180),
+      y: cy - 134 * Math.cos(a * Math.PI / 180) + 3,
+      fontSize: "8.5",
+      textAnchor: "middle",
+      fill: "var(--muted)",
+      fontFamily: "var(--mono)"
+    }, t);
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: nx,
+    cy: ny,
+    r: "9",
+    fill: "var(--surface)",
+    stroke: `var(--${st.tone === 'mute' ? 'muted' : st.tone})`,
+    strokeWidth: "4",
+    style: {
+      transition: 'all .4s'
+    }
+  }), /*#__PURE__*/React.createElement("text", {
+    x: cx,
+    y: cy - 4,
+    textAnchor: "middle",
+    className: "g-num",
+    fill: "var(--text)"
+  }, value == null ? '—' : U.f0(value)), /*#__PURE__*/React.createElement("text", {
+    x: cx,
+    y: cy + 20,
+    textAnchor: "middle",
+    fontSize: "12",
+    fill: "var(--muted)",
+    fontFamily: "var(--mono)"
+  }, "ppm CO\u2082")), st.label && /*#__PURE__*/React.createElement("div", {
+    className: "g-status"
+  }, /*#__PURE__*/React.createElement(Badge, {
+    tone: st.tone,
+    dot: true
+  }, st.label)));
+}
+
+/* ---------- 실시간 차트: 원시값 · 이동평균 ± kσ 밴드 · 이상점 ---------- */
+function LiveChart({
+  eng,
+  height = 190
+}) {
+  const S = eng.settings,
+    N = S.anomalyN,
+    K = S.anomalyK;
+  const data = useMemo(() => {
+    const r = eng.recent;
+    return r.map((p, i) => {
+      const w = r.slice(Math.max(0, i - N), i).map(x => x.f);
+      const m = w.length ? U.mean(w) : p.f;
+      const sd = w.length > 1 ? Math.sqrt(w.reduce((s, x) => s + (x - m) ** 2, 0) / (w.length - 1)) : 0;
+      const band = K * Math.max(sd, 25);
+      return {
+        t: p.ts,
+        v: p.v,
+        ma: Math.round(m),
+        band: [Math.round(m - band), Math.round(m + band)],
+        out: Math.abs(p.v - p.f) > 1 ? p.v : null
+      };
+    });
+  }, [eng.recent.length, eng.seq]);
+  if (!RC.ComposedChart) return /*#__PURE__*/React.createElement("div", {
+    className: "ph"
+  }, "\uCC28\uD2B8 \uB85C\uB529 \uC911\u2026");
+  const {
+    ResponsiveContainer,
+    ComposedChart,
+    Area,
+    Line,
+    Scatter,
+    XAxis,
+    YAxis,
+    ReferenceArea,
+    ReferenceLine,
+    Tooltip
+  } = RC;
+  return /*#__PURE__*/React.createElement(ResponsiveContainer, {
+    width: "100%",
+    height: height
+  }, /*#__PURE__*/React.createElement(ComposedChart, {
+    data: data,
+    margin: {
+      top: 6,
+      right: 6,
+      left: -18,
+      bottom: 0
+    }
+  }, /*#__PURE__*/React.createElement(ReferenceArea, {
+    y1: S.targetMin,
+    y2: S.targetMax,
+    fill: "var(--ok)",
+    fillOpacity: 0.09,
+    stroke: "none",
+    ifOverflow: "hidden"
+  }), /*#__PURE__*/React.createElement(ReferenceLine, {
+    y: S.danger,
+    stroke: "var(--danger)",
+    strokeDasharray: "3 3",
+    strokeOpacity: 0.6,
+    ifOverflow: "hidden"
+  }), /*#__PURE__*/React.createElement(XAxis, {
+    dataKey: "t",
+    tickFormatter: t => U.hms(t).slice(0, 5),
+    tick: {
+      fontSize: 10,
+      fill: 'var(--muted)'
+    },
+    stroke: "var(--line)",
+    minTickGap: 40
+  }), /*#__PURE__*/React.createElement(YAxis, {
+    domain: [dataMin => Math.max(400, Math.floor((dataMin - 100) / 100) * 100), dataMax => Math.ceil((dataMax + 100) / 100) * 100],
+    tick: {
+      fontSize: 10,
+      fill: 'var(--muted)'
+    },
+    stroke: "var(--line)",
+    allowDataOverflow: true
+  }), /*#__PURE__*/React.createElement(Tooltip, {
+    content: /*#__PURE__*/React.createElement(ChartTip, {
+      fmt: t => U.hms(t)
+    })
+  }), /*#__PURE__*/React.createElement(Area, {
+    dataKey: "band",
+    stroke: "none",
+    fill: "var(--mint)",
+    fillOpacity: 0.12,
+    isAnimationActive: false,
+    name: "\uC774\uB3D9\uD3C9\uADE0\xB1k\u03C3"
+  }), /*#__PURE__*/React.createElement(Line, {
+    dataKey: "ma",
+    stroke: "var(--mint)",
+    strokeDasharray: "4 3",
+    dot: false,
+    strokeWidth: 1.2,
+    isAnimationActive: false,
+    name: "\uC774\uB3D9\uD3C9\uADE0"
+  }), /*#__PURE__*/React.createElement(Line, {
+    dataKey: "v",
+    stroke: "var(--text)",
+    dot: false,
+    strokeWidth: 1.6,
+    isAnimationActive: false,
+    name: "\uCE21\uC815\uAC12"
+  }), /*#__PURE__*/React.createElement(Scatter, {
+    dataKey: "out",
+    fill: "var(--danger)",
+    isAnimationActive: false,
+    name: "\uC774\uC0C1\uAC12"
+  })));
+}
+function ChartTip({
+  active,
+  payload,
+  label,
+  fmt,
+  unit = 'ppm'
+}) {
+  if (!active || !payload || !payload.length) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ctip"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ctip-t"
+  }, fmt ? fmt(label) : label), payload.filter(p => p.value != null && p.name).map((p, i) => /*#__PURE__*/React.createElement("div", {
+    key: i
+  }, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: p.color || p.stroke || p.fill
+    }
+  }), p.name, " ", /*#__PURE__*/React.createElement("b", null, Array.isArray(p.value) ? p.value.map(U.f0).join('~') : U.f0(p.value)), " ", p.unit || unit)));
+}
+
+/* ---------- 순환 흐름도 (스플래시·소개) ---------- */
+const LOOP_NODES = [{
+  k: 'waste',
+  l: '음식물 폐기물',
+  s: '학생식당'
+}, {
+  k: 'ferm',
+  l: '발효',
+  s: '혐기 발효조'
+}, {
+  k: 'cap',
+  l: '포집',
+  s: 'MH-Z19B · 탱크'
+}, {
+  k: 'ai',
+  l: 'AI 판단',
+  s: 'ESP32 + 앱'
+}, {
+  k: 'dest',
+  l: '온실 · 버섯 · 생체탄 토양',
+  s: '멀티 라우팅'
+}];
+function LoopDiagram({
+  size = 340,
+  active,
+  compact
+}) {
+  const c = 170,
+    R = 128;
+  const pos = i => {
+    const a = (-90 + i * 72) * Math.PI / 180;
+    return [c + R * Math.cos(a), c + R * Math.sin(a)];
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "loop",
+    style: {
+      width: size,
+      maxWidth: '100%'
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 340 340",
+    width: "100%"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: c,
+    cy: c,
+    r: R,
+    fill: "none",
+    stroke: "var(--line2)",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: c,
+    cy: c,
+    r: R,
+    fill: "none",
+    stroke: "var(--mint)",
+    strokeWidth: "2.5",
+    strokeDasharray: "30 774",
+    strokeLinecap: "round",
+    className: "loop-run"
+  }), /*#__PURE__*/React.createElement("path", {
+    id: "loopPath",
+    d: `M${c} ${c - R} A${R} ${R} 0 1 1 ${c - 0.01} ${c - R}`,
+    fill: "none"
+  }), [0, 1, 2, 3, 4, 5].map(i => /*#__PURE__*/React.createElement("circle", {
+    key: i,
+    r: "3.2",
+    fill: "var(--mint)"
+  }, /*#__PURE__*/React.createElement("animateMotion", {
+    dur: "6s",
+    repeatCount: "indefinite",
+    begin: `${-i}s`
+  }, /*#__PURE__*/React.createElement("mpath", {
+    href: "#loopPath"
+  })))), LOOP_NODES.map((n, i) => {
+    const [x, y] = pos(i);
+    const on = active == null || active >= i;
+    return /*#__PURE__*/React.createElement("g", {
+      key: n.k,
+      className: "loop-node",
+      style: {
+        opacity: on ? 1 : .25,
+        transition: 'opacity .5s'
+      }
+    }, /*#__PURE__*/React.createElement("circle", {
+      cx: x,
+      cy: y,
+      r: i === 3 ? 22 : 17,
+      fill: i === 3 ? 'var(--mint)' : 'var(--surface2)',
+      stroke: "var(--mint)",
+      strokeWidth: "1.5"
+    }), /*#__PURE__*/React.createElement("text", {
+      x: x,
+      y: y + 4.5,
+      textAnchor: "middle",
+      fontSize: i === 3 ? 13 : 12,
+      fontWeight: "700",
+      fill: i === 3 ? 'var(--on-mint)' : 'var(--mint)',
+      fontFamily: "var(--mono)"
+    }, i === 3 ? 'AI' : i + 1));
+  }), /*#__PURE__*/React.createElement("text", {
+    x: c,
+    y: c - 6,
+    textAnchor: "middle",
+    fontSize: "11",
+    fill: "var(--muted)",
+    fontFamily: "var(--mono)",
+    letterSpacing: "2"
+  }, "CAMPUS"), /*#__PURE__*/React.createElement("text", {
+    x: c,
+    y: c + 14,
+    textAnchor: "middle",
+    fontSize: "17",
+    fontWeight: "800",
+    fill: "var(--text)"
+  }, "\uD0C4\uC18C \uC21C\uD658")), !compact && LOOP_NODES.map((n, i) => {
+    const [x, y] = pos(i);
+    const right = x > c + 5,
+      left = x < c - 5;
+    return /*#__PURE__*/React.createElement("div", {
+      key: n.k,
+      className: "loop-lbl",
+      style: {
+        left: `${(x + (right ? 28 : left ? -28 : 0)) / 340 * 100}%`,
+        top: `${(y + (i === 0 ? -30 : 0)) / 340 * 100}%`,
+        transform: `translate(${right ? '0' : left ? '-100%' : '-50%'}, -50%)`,
+        textAlign: right ? 'left' : left ? 'right' : 'center',
+        opacity: active == null || active >= i ? 1 : .25
+      }
+    }, /*#__PURE__*/React.createElement("b", null, n.l), /*#__PURE__*/React.createElement("span", null, n.s));
+  }));
+}
+function Empty({
+  children
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "empty"
+  }, children);
+}
+Object.assign(window, {
+  useEngine,
+  useNow,
+  Icon,
+  Logo,
+  Card,
+  Badge,
+  Toggle,
+  Seg,
+  Stat,
+  levelTone,
+  ppmStatus,
+  Gauge,
+  LiveChart,
+  ChartTip,
+  LoopDiagram,
+  LOOP_NODES,
+  Empty,
+  U,
+  RC
+});
+</script>
+<script>
+/* cl-screens-a.jsx (JSX 미리 변환됨) */
+/* Carbon Loop — 화면 A: 스플래시 · 홈 · 기록 · 라우팅 (src/screens/*) */
+
+/* ---------- 1. 로딩·시작 ---------- */
+function Splash({
+  onDone
+}) {
+  const [step, setStep] = useState(-1);
+  useEffect(() => {
+    const ts = [0, 1, 2, 3, 4].map(i => setTimeout(() => setStep(i), 350 + i * 520));
+    return () => ts.forEach(clearTimeout);
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "splash",
+    "data-screen-label": "00 \uC2DC\uC791"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "splash-in"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "splash-brand"
+  }, /*#__PURE__*/React.createElement(Logo, {
+    size: 34
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "\uCE74\uBCF8\uB8E8\uD504"), /*#__PURE__*/React.createElement("span", null, "CARBON LOOP"))), /*#__PURE__*/React.createElement(LoopDiagram, {
+    size: 360,
+    active: step
+  }), /*#__PURE__*/React.createElement("p", {
+    className: "splash-copy"
+  }, "\uD0C4\uC18C\uB97C \uB118\uCE58\uAC8C \uBC30\uCD9C\uD558\uBA74\uC11C,", /*#__PURE__*/React.createElement("br", null), "\uC815\uC791 \uD544\uC694\uD55C \uD0C4\uC18C\uB294 \uC218\uC785\uD569\uB2C8\uB2E4.", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("em", null, "\uCEA0\uD37C\uC2A4\uC5D0\uC11C \uBC84\uB824\uC9C0\uB294 CO\u2082\uB97C \uB2E4\uC2DC \uC4F0\uB294 \uC21C\uD658\uC744 \uC2DC\uC791\uD569\uB2C8\uB2E4.")), /*#__PURE__*/React.createElement("button", {
+    className: "btn primary lg",
+    onClick: onDone,
+    style: {
+      opacity: step >= 4 ? 1 : .35
+    }
+  }, "\uB300\uC2DC\uBCF4\uB4DC \uC2DC\uC791 ", /*#__PURE__*/React.createElement(Icon, {
+    name: "arrow",
+    size: 16
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "splash-foot"
+  }, "\uB370\uBAA8 \uBAA8\uB4DC \xB7 \uAC00\uC0C1 \uC13C\uC11C \uB370\uC774\uD130\uB85C \uC2E4\uD589 \uC911")));
+}
+
+/* ---------- AI 판단 카드 ---------- */
+function AiCard({
+  eng
+}) {
+  const d = eng.decision,
+    a = eng.anomaly,
+    S = eng.settings;
+  const last = eng.log.filter(l => l.kind !== 'soil' && l.kind !== 'demo')[0];
+  return /*#__PURE__*/React.createElement("section", {
+    className: 'ai-card lv-' + d.level
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ai-top"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ai-tag"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pulse"
+  }), "\uC9C0\uAE08 AI\uC758 \uD310\uB2E8"), /*#__PURE__*/React.createElement("span", {
+    className: "ai-mode"
+  }, S.mode === 'auto' ? '자동 제어' : '수동 모드')), /*#__PURE__*/React.createElement("p", {
+    className: "ai-text"
+  }, d.text), /*#__PURE__*/React.createElement("div", {
+    className: "ai-meta"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uC801\uC6A9 \uADDC\uCE59"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, d.rule)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uD310\uB2E8 \uC2DC\uAC01"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, d.ts ? U.hms(d.ts) : '—'))), /*#__PURE__*/React.createElement("div", {
+    className: 'anom ' + (a.status === 'anomaly' ? 'bad' : 'good')
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "anom-l"
+  }, /*#__PURE__*/React.createElement("b", null, a.status === 'anomaly' ? '이상 징후' : '정상'), /*#__PURE__*/React.createElement("span", null, a.status === 'anomaly' ? a.detail : `최근 ${S.anomalyN}개 이동평균 ${U.f0(a.mean)}ppm · σ ${U.f1(a.std)} — 튐·멈춤 없음`)), /*#__PURE__*/React.createElement("span", {
+    className: "mono anom-k"
+  }, "k=", S.anomalyK, "\u03C3")));
+}
+function ConnPill({
+  eng
+}) {
+  const now = useNow(1000);
+  const ago = eng.lastRecvReal ? Math.max(0, Math.round((now - eng.lastRecvReal) / 1000)) : null;
+  const on = eng.connected;
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'conn ' + (on ? 'on' : 'off')
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "wifi",
+    size: 15
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, on ? 'ESP32 연결됨' : '연결 끊김'), /*#__PURE__*/React.createElement("span", null, eng.source ? eng.source.label : '—', " \xB7 ", eng.settings.deviceId)), /*#__PURE__*/React.createElement("div", {
+    className: "conn-r"
+  }, /*#__PURE__*/React.createElement("span", null, "\uB9C8\uC9C0\uB9C9 \uC218\uC2E0"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, eng.lastRecvTs ? U.hms(eng.lastRecvTs) : '—'), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, ago == null ? '' : ago < 2 ? '방금' : `${ago}초 전`)));
+}
+function ActTile({
+  label,
+  on,
+  onTxt,
+  offTxt,
+  hint,
+  tone = 'mint'
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'act ' + (on ? 'on t-' + tone : '')
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "act-dot"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "act-l"
+  }, label), /*#__PURE__*/React.createElement("div", {
+    className: "act-v"
+  }, on ? onTxt : offTxt), /*#__PURE__*/React.createElement("div", {
+    className: "act-h"
+  }, hint));
+}
+
+/* ---------- 2. 홈 대시보드 ---------- */
+function Home({
+  eng,
+  go
+}) {
+  const r = eng.latest,
+    S = eng.settings,
+    v = eng.val;
+  const today = eng.today();
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "01 \uD648"
+  }, /*#__PURE__*/React.createElement(AiCard, {
+    eng: eng
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "grid-home"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uC628\uC2E4 CO\u2082 \uB18D\uB3C4",
+    sub: "MH-Z19B \xB7 NDIR",
+    className: "c-gauge",
+    right: /*#__PURE__*/React.createElement(Badge, {
+      tone: "mute"
+    }, "\uBAA9\uD45C ", U.f0(S.targetMin), "~", U.f0(S.targetMax))
+  }, /*#__PURE__*/React.createElement(Gauge, {
+    value: v,
+    S: S
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "legend"
+  }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--ok)'
+    }
+  }), "\uBAA9\uD45C"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--warn)'
+    }
+  }), "\uC8FC\uC758"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--danger)'
+    }
+  }), "\uC704\uD5D8 >", S.danger))), /*#__PURE__*/React.createElement("div", {
+    className: "col"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uD658\uACBD",
+    sub: "DHT22"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row2"
+  }, /*#__PURE__*/React.createElement(Stat, {
+    label: "\uC628\uB3C4",
+    value: r ? r.gh.temp.toFixed(1) : '—',
+    unit: "\xB0C"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uC2B5\uB3C4",
+    value: r ? Math.round(r.gh.hum) : '—',
+    unit: "%"
+  }))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC561\uCD94\uC5D0\uC774\uD130",
+    sub: "ESP32 \uCD9C\uB825 \uC0C1\uD0DC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row2"
+  }, /*#__PURE__*/React.createElement(ActTile, {
+    label: "\uC628\uC2E4 \uBC38\uBE0C",
+    on: r && r.act.ghValve,
+    onTxt: "\uC5F4\uB9BC \xB7 \uC8FC\uC785",
+    offTxt: "\uB2EB\uD798",
+    hint: "12V \uC194\uB808\uB178\uC774\uB4DC"
+  }), /*#__PURE__*/React.createElement(ActTile, {
+    label: "\uCFE8\uB9C1\uD32C",
+    on: r && r.act.fan,
+    onTxt: "\uC791\uB3D9 \xB7 \uD658\uAE30",
+    offTxt: "\uB300\uAE30",
+    hint: "\uC548\uC804\uC7A5\uCE58",
+    tone: "danger"
+  }))), /*#__PURE__*/React.createElement(ConnPill, {
+    eng: eng
+  }))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC2E4\uC2DC\uAC04 \uCD94\uC774 \xB7 \uC774\uC0C1\uD0D0\uC9C0",
+    sub: `측정값 vs 이동평균 ± ${S.anomalyK}σ 밴드 (N=${S.anomalyN})`,
+    right: /*#__PURE__*/React.createElement("button", {
+      className: "btn ghost sm",
+      onClick: () => go('history')
+    }, "\uAE30\uB85D \uBCF4\uAE30")
+  }, /*#__PURE__*/React.createElement(LiveChart, {
+    eng: eng
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "legend"
+  }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--text)'
+    }
+  }), "\uCE21\uC815\uAC12"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    className: "dash"
+  }), "\uC774\uB3D9\uD3C9\uADE0"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--mint)',
+      opacity: .35
+    }
+  }), "\uD5C8\uC6A9 \uBC34\uB4DC"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--danger)',
+      borderRadius: 9
+    }
+  }), "\uC774\uC0C1\uAC12"), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    style: {
+      background: 'var(--ok)',
+      opacity: .3
+    }
+  }), "\uBAA9\uD45C \uAD6C\uAC04"))), /*#__PURE__*/React.createElement("div", {
+    className: "grid-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "mini",
+    onClick: () => go('routing')
+  }, /*#__PURE__*/React.createElement("span", null, "\uC624\uB298 \uD3EC\uC9D1"), /*#__PURE__*/React.createElement("b", null, U.f0(today.captured), /*#__PURE__*/React.createElement("small", null, "g")), /*#__PURE__*/React.createElement("em", null, "\uB77C\uC6B0\uD305 \uBCF4\uAE30 \u2192")), /*#__PURE__*/React.createElement("button", {
+    className: "mini",
+    onClick: () => go('routing')
+  }, /*#__PURE__*/React.createElement("span", null, "\uBC84\uC12F \uCC54\uBC84"), /*#__PURE__*/React.createElement("b", null, r ? U.f0(r.mu.co2) : '—', /*#__PURE__*/React.createElement("small", null, "ppm")), /*#__PURE__*/React.createElement("em", null, r && r.act.muValve ? '공급 중' : '대기')), /*#__PURE__*/React.createElement("button", {
+    className: "mini",
+    onClick: () => go('impact')
+  }, /*#__PURE__*/React.createElement("span", null, "\uC18C\uB098\uBB34 \uD658\uC0B0"), /*#__PURE__*/React.createElement("b", null, U.f1(today.captured / CL.CONST.PINE_G_PER_DAY), /*#__PURE__*/React.createElement("small", null, "\uADF8\uB8E8")), /*#__PURE__*/React.createElement("em", null, "\uC784\uD329\uD2B8 \uCE74\uB4DC \u2192"))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uCD5C\uADFC \uD310\uB2E8 \uAE30\uB85D",
+    right: /*#__PURE__*/React.createElement(Badge, {
+      tone: "mute"
+    }, eng.log.length, "\uAC74")
+  }, /*#__PURE__*/React.createElement(LogList, {
+    items: eng.log.slice(0, 6)
+  })));
+}
+const KIND_L = {
+  control: '제어',
+  safety: '안전',
+  sensor: '센서',
+  conn: '연결',
+  route: '라우팅',
+  soil: '토양',
+  demo: '시연'
+};
+function LogList({
+  items,
+  showKind = true
+}) {
+  if (!items.length) return /*#__PURE__*/React.createElement(Empty, null, "\uC544\uC9C1 \uAE30\uB85D\uC774 \uC5C6\uC5B4\uC694.");
+  return /*#__PURE__*/React.createElement("ul", {
+    className: "log"
+  }, items.map(l => /*#__PURE__*/React.createElement("li", {
+    key: l.id,
+    className: 'lv-' + l.level
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "log-t mono"
+  }, U.hms(l.ts).slice(0, 5)), showKind && /*#__PURE__*/React.createElement("span", {
+    className: "log-k"
+  }, KIND_L[l.kind] || l.kind), /*#__PURE__*/React.createElement("span", {
+    className: "log-x"
+  }, l.text))));
+}
+
+/* ---------- 3. 기록 ---------- */
+function History({
+  eng
+}) {
+  const [range, setRange] = useState('24h');
+  const S = eng.settings,
+    T = eng.totals;
+  const {
+    ResponsiveContainer,
+    ComposedChart,
+    Line,
+    Area,
+    XAxis,
+    YAxis,
+    ReferenceArea,
+    Tooltip,
+    CartesianGrid,
+    Bar
+  } = RC;
+  const nowTs = eng.latest ? eng.latest.ts : Date.now();
+  const data = useMemo(() => {
+    if (range === 'daily') {
+      return Object.entries(eng.daily).sort().slice(-7).map(([k, d]) => ({
+        t: k.slice(5).replace('-', '/'),
+        avg: Math.round(d.sum / Math.max(1, d.n)),
+        range: [Math.round(d.min), Math.round(d.max)],
+        band: Math.round(d.inBand / Math.max(1, d.n) * 100),
+        cap: Math.round(d.captured)
+      }));
+    }
+    const hrs = range === '24h' ? 24 : 6;
+    const from = nowTs - hrs * 3600e3;
+    const pts = eng.series.filter(p => p.ts >= from);
+    if (range === '24h') {
+      // 시간별 평균
+      const m = {};
+      pts.forEach(p => {
+        const k = Math.floor(p.ts / 3600e3);
+        (m[k] = m[k] || []).push(p);
+      });
+      return Object.entries(m).map(([k, a]) => ({
+        t: +k * 3600e3,
+        avg: Math.round(U.mean(a.map(x => x.gh))),
+        mu: Math.round(U.mean(a.map(x => x.mu)))
+      }));
+    }
+    return pts.map(p => ({
+      t: p.ts,
+      avg: Math.round(p.gh)
+    }));
+  }, [range, eng.series.length, eng.seq]);
+  const daily = range === 'daily';
+  const [more, setMore] = useState(false);
+  const evs = eng.events.slice(0, more ? 80 : 12);
+  const destL = {
+    gh: '온실',
+    mu: '버섯 챔버',
+    bc: '생체탄'
+  };
+  const today = eng.today();
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "02 \uAE30\uB85D"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid-4"
+  }, /*#__PURE__*/React.createElement(Stat, {
+    label: "\uB204\uC801 \uD3EC\uC9D1\uB7C9",
+    value: U.f0(T.captured),
+    unit: "g"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uB204\uC801 \uC8FC\uC785\uB7C9",
+    value: U.f0(T.injected),
+    unit: "g"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uC0DD\uCCB4\uD0C4 \uACE0\uC815",
+    value: U.f0(T.bc),
+    unit: "g"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uC624\uB298 \uBAA9\uD45C \uC720\uC9C0\uC728",
+    value: today.n ? Math.round(today.inBand / today.n * 100) : 0,
+    unit: "%",
+    tone: "ok"
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: daily ? '일별 CO₂ 평균 · 최저~최고' : range === '24h' ? '시간별 CO₂ 평균 (최근 24시간)' : '5분 평균 CO₂ (최근 6시간)',
+    sub: "\uCD08\uB85D \uC74C\uC601 = \uBAA9\uD45C \uAD6C\uAC04",
+    right: /*#__PURE__*/React.createElement(Seg, {
+      value: range,
+      onChange: setRange,
+      options: [{
+        v: '6h',
+        l: '6시간'
+      }, {
+        v: '24h',
+        l: '시간별'
+      }, {
+        v: 'daily',
+        l: '일별'
+      }]
+    })
+  }, ResponsiveContainer ? /*#__PURE__*/React.createElement(ResponsiveContainer, {
+    width: "100%",
+    height: 250
+  }, /*#__PURE__*/React.createElement(ComposedChart, {
+    data: data,
+    margin: {
+      top: 8,
+      right: 8,
+      left: -16,
+      bottom: 0
+    }
+  }, /*#__PURE__*/React.createElement(CartesianGrid, {
+    stroke: "var(--line)",
+    vertical: false
+  }), /*#__PURE__*/React.createElement(ReferenceArea, {
+    y1: S.targetMin,
+    y2: S.targetMax,
+    fill: "var(--ok)",
+    fillOpacity: 0.12,
+    stroke: "none",
+    ifOverflow: "hidden"
+  }), /*#__PURE__*/React.createElement(XAxis, {
+    dataKey: "t",
+    tickFormatter: t => daily ? t : U.hms(t).slice(0, 5),
+    tick: {
+      fontSize: 10,
+      fill: 'var(--muted)'
+    },
+    stroke: "var(--line)",
+    minTickGap: 24
+  }), /*#__PURE__*/React.createElement(YAxis, {
+    domain: [400, dataMax => Math.max(1400, Math.ceil(dataMax / 200) * 200)],
+    tick: {
+      fontSize: 10,
+      fill: 'var(--muted)'
+    },
+    stroke: "var(--line)"
+  }), /*#__PURE__*/React.createElement(Tooltip, {
+    content: /*#__PURE__*/React.createElement(ChartTip, {
+      fmt: t => daily ? t : U.hms(t).slice(0, 5)
+    })
+  }), daily && /*#__PURE__*/React.createElement(Area, {
+    dataKey: "range",
+    stroke: "none",
+    fill: "var(--mint)",
+    fillOpacity: 0.18,
+    name: "\uCD5C\uC800~\uCD5C\uACE0",
+    isAnimationActive: false
+  }), /*#__PURE__*/React.createElement(Line, {
+    dataKey: "avg",
+    stroke: "var(--mint)",
+    strokeWidth: 2.2,
+    dot: daily || range === '24h' ? {
+      r: 2.5,
+      fill: 'var(--mint)'
+    } : false,
+    name: "\uD3C9\uADE0",
+    isAnimationActive: false
+  }))) : /*#__PURE__*/React.createElement("div", {
+    className: "ph"
+  }, "\uCC28\uD2B8 \uB85C\uB529 \uC911\u2026")), daily && /*#__PURE__*/React.createElement(Card, {
+    title: "\uC77C\uBCC4 \uD3EC\uC9D1\uB7C9 \xB7 \uBAA9\uD45C \uC720\uC9C0\uC728"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "tbl"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "\uB0A0\uC9DC"), /*#__PURE__*/React.createElement("th", null, "\uD3EC\uC9D1"), /*#__PURE__*/React.createElement("th", null, "\uD3C9\uADE0"), /*#__PURE__*/React.createElement("th", null, "\uBAA9\uD45C \uC720\uC9C0\uC728"))), /*#__PURE__*/React.createElement("tbody", null, [...data].reverse().map(d => /*#__PURE__*/React.createElement("tr", {
+    key: d.t
+  }, /*#__PURE__*/React.createElement("td", {
+    className: "mono"
+  }, d.t), /*#__PURE__*/React.createElement("td", {
+    className: "mono"
+  }, U.f0(d.cap), " g"), /*#__PURE__*/React.createElement("td", {
+    className: "mono"
+  }, U.f0(d.avg), " ppm"), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+    className: "minibar"
+  }, /*#__PURE__*/React.createElement("i", {
+    style: {
+      width: d.band + '%'
+    }
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, d.band, "%"))))))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC8FC\uC785 \uC774\uBCA4\uD2B8 \uB85C\uADF8",
+    sub: "\uBC38\uBE0C\uAC00 \uC5F4\uB9B0 \uC2DC\uAC01 \xB7 \uC8FC\uC785 \uC2DC\uAC04 \xB7 \uC8FC\uC785\uB7C9",
+    right: /*#__PURE__*/React.createElement(Badge, {
+      tone: "mute"
+    }, eng.events.length, "\uD68C")
+  }, Object.values(eng.openEv).length > 0 && /*#__PURE__*/React.createElement("ul", {
+    className: "evs live"
+  }, Object.values(eng.openEv).map(e => /*#__PURE__*/React.createElement("li", {
+    key: e.dest
+  }, /*#__PURE__*/React.createElement("span", {
+    className: 'ev-d d-' + e.dest
+  }, destL[e.dest]), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, U.hms(e.start).slice(0, 5), " \uC5F4\uB9BC"), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "\uC9C4\uD589 \uC911 ", Math.round((nowTs - e.start) / 60000), "\uBD84"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, U.f1(e.grams), " g")))), evs.length ? /*#__PURE__*/React.createElement("ul", {
+    className: "evs"
+  }, evs.map((e, i) => /*#__PURE__*/React.createElement("li", {
+    key: i
+  }, /*#__PURE__*/React.createElement("span", {
+    className: 'ev-d d-' + e.dest
+  }, destL[e.dest]), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, new Date(e.start).getMonth() + 1, "/", new Date(e.start).getDate(), " ", U.hms(e.start).slice(0, 5), " \uC5F4\uB9BC"), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, Math.max(1, Math.round(e.minutes)), "\uBD84\uAC04 \uC8FC\uC785"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, U.f1(e.grams), " g")))) : /*#__PURE__*/React.createElement(Empty, null, "\uC544\uC9C1 \uC644\uB8CC\uB41C \uC8FC\uC785\uC774 \uC5C6\uC5B4\uC694."), eng.events.length > 12 && /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost sm full",
+    style: {
+      marginTop: 10
+    },
+    onClick: () => setMore(!more)
+  }, more ? '접기' : `더 보기 (${eng.events.length - 12}건)`)));
+}
+
+/* ---------- 4. 라우팅 ---------- */
+function DestCard({
+  n,
+  name,
+  sub,
+  ppm,
+  range = [0, 1],
+  met,
+  score,
+  on,
+  extra,
+  tone
+}) {
+  const [a, b] = range;
+  const pct = ppm == null ? 0 : Math.min(100, Math.max(0, (ppm - 400) / (b * 1.25 - 400) * 100));
+  const bandL = (a - 400) / (b * 1.25 - 400) * 100,
+    bandR = (b - 400) / (b * 1.25 - 400) * 100;
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'dest ' + (on ? 'flowing' : '')
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "dest-h"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dest-n mono"
+  }, n), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, name), /*#__PURE__*/React.createElement("span", null, sub)), /*#__PURE__*/React.createElement(Badge, {
+    tone: on ? 'info' : 'mute',
+    dot: on
+  }, on ? '공급 중' : '대기')), ppm != null ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "dest-v"
+  }, /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, U.f0(ppm)), /*#__PURE__*/React.createElement("span", null, "ppm"), /*#__PURE__*/React.createElement(Badge, {
+    tone: met ? 'ok' : 'warn'
+  }, met ? '목표 충족' : '부족')), /*#__PURE__*/React.createElement("div", {
+    className: "rangebar"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "band",
+    style: {
+      left: bandL + '%',
+      width: bandR - bandL + '%'
+    }
+  }), /*#__PURE__*/React.createElement("i", {
+    className: "cur",
+    style: {
+      left: pct + '%'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dest-f mono"
+  }, /*#__PURE__*/React.createElement("span", null, "\uBAA9\uD45C ", U.f0(a), "~", U.f0(b)), /*#__PURE__*/React.createElement("span", null, "\uC218\uC694 \uC810\uC218 ", /*#__PURE__*/React.createElement("b", null, score)))) : extra);
+}
+function Routing({
+  eng
+}) {
+  const r = eng.latest,
+    S = eng.settings,
+    R = eng.route,
+    today = eng.today();
+  const tot = today.gh + today.mu + today.bc;
+  const pct = k => tot ? Math.round(today[k] / tot * 100) : 0;
+  const tank = r ? r.tank.g : 0;
+  const soil = r ? r.soil : [];
+  const stL = {
+    ok: '목표 달성',
+    dry: '건조 · 보류',
+    wet: '과습 · 보류',
+    stock: '재고 부족',
+    supply: '공급 완료'
+  };
+  const {
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    Cell,
+    LabelList
+  } = RC;
+  const barData = [{
+    k: 'gh',
+    n: '온실',
+    v: pct('gh'),
+    g: today.gh
+  }, {
+    k: 'mu',
+    n: '버섯',
+    v: pct('mu'),
+    g: today.mu
+  }, {
+    k: 'bc',
+    n: '생체탄',
+    v: pct('bc'),
+    g: today.bc
+  }];
+  const colors = {
+    gh: 'var(--c-gh)',
+    mu: 'var(--c-mu)',
+    bc: 'var(--c-bc)'
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "03 \uB77C\uC6B0\uD305"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "CO\u2082 \uBA40\uD2F0 \uB77C\uC6B0\uD305",
+    sub: "\uC218\uC694 \uC810\uC218(\uBAA9\uD45C \uB300\uBE44 \uBD80\uC871\uBD84) \uC21C \xB7 \uC628\uC2E4 \u2192 \uBC84\uC12F \u2192 \uC0DD\uCCB4\uD0C4",
+    className: "flow-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flow"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flow-src"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD3EC\uC9D1 \uD0F1\uD06C"), /*#__PURE__*/React.createElement("div", {
+    className: "tankv"
+  }, /*#__PURE__*/React.createElement("i", {
+    style: {
+      height: Math.min(100, tank / CL.CONST.TANK_CAP * 100) + '%'
+    }
+  })), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, U.f0(tank), /*#__PURE__*/React.createElement("small", null, "/", CL.CONST.TANK_CAP, "g"))), /*#__PURE__*/React.createElement("div", {
+    className: "flow-lines"
+  }, ['gh', 'mu', 'bc'].map((k, i) => /*#__PURE__*/React.createElement("div", {
+    key: k,
+    className: 'fl fl-' + k + (r && r.act[k + 'Valve'] ? ' on' : '')
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, i + 1, "\uC21C\uC704"), /*#__PURE__*/React.createElement("i", null)))), /*#__PURE__*/React.createElement("div", {
+    className: "flow-dst"
+  }, /*#__PURE__*/React.createElement(DestCard, {
+    n: "1",
+    name: "\uC2A4\uB9C8\uD2B8 \uC628\uC2E4",
+    sub: "\uAD11\uD569\uC131 \uCD5C\uC801 \uB18D\uB3C4",
+    ppm: eng.val,
+    range: [S.targetMin, S.targetMax],
+    met: R.gh.met,
+    score: R.gh.score,
+    on: r && r.act.ghValve
+  }), /*#__PURE__*/React.createElement(DestCard, {
+    n: "2",
+    name: "\uBC84\uC12F \uC7AC\uBC30 \uCC54\uBC84",
+    sub: "\uACE0\uB18D\uB3C4 \uC0DD\uC7A5 \uCD09\uC9C4",
+    ppm: r && r.mu.co2,
+    range: [S.muMin, S.muMax],
+    met: R.mu.met,
+    score: R.mu.score,
+    on: r && r.act.muValve
+  }), /*#__PURE__*/React.createElement(DestCard, {
+    n: "3",
+    name: "\uC0DD\uCCB4\uD0C4 \uBC18\uC751\uAE30",
+    sub: "\uC5EC\uBD84 CO\u2082 \uACE0\uC815 \xB7 \uC7A5\uAE30 \uC800\uC7A5",
+    ppm: null,
+    on: r && r.act.bcValve,
+    extra: /*#__PURE__*/React.createElement("div", {
+      className: "dest-bc"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uD0F1\uD06C \uC5EC\uBD84"), /*#__PURE__*/React.createElement("b", {
+      className: "mono"
+    }, U.f0(R.bc.surplus || 0), " g")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uC624\uB298 \uACE0\uC815"), /*#__PURE__*/React.createElement("b", {
+      className: "mono"
+    }, U.f1(today.bc), " g")), /*#__PURE__*/React.createElement("div", {
+      className: "dest-note"
+    }, R.gh.met && R.mu.met ? '앞선 수요처 충족 → 여분 수용 가능' : '앞선 수요처 우선 · 여분 대기'))
+  })))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC624\uB298\uC758 \uBD84\uBC30 \uBE44\uC728",
+    sub: `총 ${U.f0(tot)}g 분배`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stack"
+  }, barData.map(b => b.v > 0 && /*#__PURE__*/React.createElement("i", {
+    key: b.k,
+    style: {
+      width: b.v + '%',
+      background: colors[b.k]
+    }
+  }, /*#__PURE__*/React.createElement("span", null, b.n, " ", b.v, "%")))), ResponsiveContainer && /*#__PURE__*/React.createElement(ResponsiveContainer, {
+    width: "100%",
+    height: 150
+  }, /*#__PURE__*/React.createElement(BarChart, {
+    data: barData,
+    layout: "vertical",
+    margin: {
+      top: 4,
+      right: 70,
+      left: 0,
+      bottom: 0
+    }
+  }, /*#__PURE__*/React.createElement(XAxis, {
+    type: "number",
+    hide: true,
+    domain: [0, 100]
+  }), /*#__PURE__*/React.createElement(YAxis, {
+    type: "category",
+    dataKey: "n",
+    width: 56,
+    tick: {
+      fontSize: 12,
+      fill: 'var(--text)'
+    },
+    axisLine: false,
+    tickLine: false
+  }), /*#__PURE__*/React.createElement(Bar, {
+    dataKey: "v",
+    radius: [0, 6, 6, 0],
+    isAnimationActive: false,
+    barSize: 22,
+    background: {
+      fill: 'var(--surface2)',
+      radius: 6
+    }
+  }, barData.map(b => /*#__PURE__*/React.createElement(Cell, {
+    key: b.k,
+    fill: colors[b.k]
+  })), /*#__PURE__*/React.createElement(LabelList, {
+    dataKey: "v",
+    position: "right",
+    content: p => /*#__PURE__*/React.createElement("text", {
+      x: p.x + p.width + 8,
+      y: p.y + p.height / 2 + 4,
+      fontSize: "12",
+      fill: "var(--text)",
+      fontFamily: "var(--mono)"
+    }, p.value, "% \xB7 ", U.f0(barData[p.index].g), "g")
+  }))))), /*#__PURE__*/React.createElement("div", {
+    className: "grid-2"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uC0DD\uCCB4\uD0C4 \uBC18\uC751\uAE30",
+    sub: "Biochar \uD1A0\uC591 \uD0C4\uC18C \uACE0\uC815"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row3"
+  }, /*#__PURE__*/React.createElement(Stat, {
+    label: "\uB204\uC801 \uACE0\uC815\uB7C9",
+    value: U.f0(eng.totals.bc),
+    unit: "g CO\u2082"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uAC1C\uB7C9\uC81C \uC7AC\uACE0",
+    value: r ? r.bc.stockKg.toFixed(2) : '—',
+    unit: "kg"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uD1A0\uC591 \uACF5\uAE09\uB7C9",
+    value: r ? r.bc.suppliedKg.toFixed(2) : '—',
+    unit: "kg"
+  }))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uD1A0\uC591 \uC0C1\uD0DC",
+    sub: `공급 조건: 수분 ${S.soilMin}~${S.soilMax}% · 유기탄소 < ${S.socTarget}%`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "soils"
+  }, soil.map(s => {
+    const st = eng.soilState[s.id];
+    const okM = s.moisture >= S.soilMin && s.moisture <= S.soilMax;
+    return /*#__PURE__*/React.createElement("div", {
+      key: s.id,
+      className: "soil"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "soil-h"
+    }, /*#__PURE__*/React.createElement("b", null, s.name), st && /*#__PURE__*/React.createElement(Badge, {
+      tone: st.st === 'supply' || st.st === 'ok' ? 'ok' : 'warn'
+    }, stL[st.st])), /*#__PURE__*/React.createElement("div", {
+      className: "soil-m"
+    }, /*#__PURE__*/React.createElement("span", null, "\uC218\uBD84"), /*#__PURE__*/React.createElement("div", {
+      className: "rangebar sm"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "band",
+      style: {
+        left: S.soilMin / 80 * 100 + '%',
+        width: (S.soilMax - S.soilMin) / 80 * 100 + '%'
+      }
+    }), /*#__PURE__*/React.createElement("i", {
+      className: "cur",
+      style: {
+        left: Math.min(100, s.moisture / 80 * 100) + '%'
+      }
+    })), /*#__PURE__*/React.createElement("b", {
+      className: 'mono ' + (okM ? '' : 't-warn')
+    }, U.f0(s.moisture), "%")), /*#__PURE__*/React.createElement("div", {
+      className: "soil-m"
+    }, /*#__PURE__*/React.createElement("span", null, "\uC720\uAE30\uD0C4\uC18C"), /*#__PURE__*/React.createElement("div", {
+      className: "rangebar sm"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "cur",
+      style: {
+        left: Math.min(100, (s.soc - 1) / 2 * 100) + '%'
+      }
+    }), /*#__PURE__*/React.createElement("i", {
+      className: "mark",
+      style: {
+        left: (S.socTarget - 1) / 2 * 100 + '%'
+      }
+    })), /*#__PURE__*/React.createElement("b", {
+      className: "mono"
+    }, s.soc.toFixed(2), "%")));
+  })))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uB77C\uC6B0\uD305 \uACB0\uC815 \uB85C\uADF8",
+    sub: "\uBD84\uBC30\xB7\uD1A0\uC591 \uACF5\uAE09\uB9C8\uB2E4 \uC774\uC720\uB97C \uB0A8\uACA8\uC694"
+  }, /*#__PURE__*/React.createElement(LogList, {
+    items: eng.log.filter(l => l.kind === 'route' || l.kind === 'soil').slice(0, 14)
+  })));
+}
+Object.assign(window, {
+  Splash,
+  Home,
+  History,
+  Routing,
+  LogList,
+  AiCard,
+  KIND_L
+});
+</script>
+<script>
+/* cl-screens-b.jsx (JSX 미리 변환됨) */
+/* Carbon Loop — 화면 B: 임팩트 · 알림 · 설정 · 소개 */
+
+/* ---------- 5. 임팩트 카드 ---------- */
+function drawImpact(canvas, d) {
+  const W = 1080,
+    H = 1350,
+    x = canvas.getContext('2d');
+  canvas.width = W;
+  canvas.height = H;
+  const F = '"Pretendard Variable", Pretendard, "Noto Sans KR", sans-serif',
+    M = '"JetBrains Mono", ui-monospace, monospace';
+  x.fillStyle = '#0b2a22';
+  x.fillRect(0, 0, W, H);
+  // 순환 링
+  x.strokeStyle = 'rgba(94,234,190,.14)';
+  x.lineWidth = 2;
+  for (let i = 0; i < 5; i++) {
+    x.beginPath();
+    x.arc(W - 120, 240, 160 + i * 70, 0, Math.PI * 2);
+    x.stroke();
+  }
+  x.strokeStyle = '#5eeabe';
+  x.lineWidth = 22;
+  x.lineCap = 'round';
+  x.beginPath();
+  x.arc(W - 120, 240, 160, Math.PI * 0.6, Math.PI * 2.25);
+  x.stroke();
+  // 로고
+  x.lineWidth = 9;
+  x.beginPath();
+  x.arc(110, 118, 26, Math.PI * 0.2, Math.PI * 1.85);
+  x.stroke();
+  x.fillStyle = '#5eeabe';
+  x.beginPath();
+  x.arc(110, 118, 8, 0, Math.PI * 2);
+  x.fill();
+  x.fillStyle = '#eafff6';
+  x.font = `800 40px ${F}`;
+  x.fillText('카본루프', 156, 132);
+  x.fillStyle = 'rgba(234,255,246,.55)';
+  x.font = `500 26px ${M}`;
+  x.fillText(d.date + ' · ' + d.site, 80, 230);
+  x.fillStyle = '#eafff6';
+  x.font = `700 54px ${F}`;
+  x.fillText('오늘 우리 캠퍼스가', 80, 330);
+  x.fillText('다시 쓴 탄소', 80, 400);
+  // 큰 수
+  x.fillStyle = '#5eeabe';
+  x.font = `800 300px ${M}`;
+  const big = d.trees;
+  x.fillText(big, 72, 720);
+  const bw = x.measureText(big).width;
+  x.fillStyle = '#eafff6';
+  x.font = `700 64px ${F}`;
+  x.fillText('그루', 72 + bw + 20, 720);
+  x.fillStyle = 'rgba(234,255,246,.8)';
+  x.font = `500 38px ${F}`;
+  x.fillText(`소나무 ${d.trees}그루가 하루 동안 흡수하는 양만큼`, 80, 800);
+  x.fillText('음식물쓰레기 CO₂를 포집해 다시 썼어요.', 80, 852);
+  // 지표 3
+  const stats = [['포집', d.cap + 'g'], ['식물·버섯에 공급', d.use + 'g'], ['토양에 고정', d.bc + 'g']];
+  stats.forEach((s, i) => {
+    const sx = 80 + i * 320;
+    x.fillStyle = 'rgba(94,234,190,.1)';
+    roundRect(x, sx, 930, 296, 170, 24);
+    x.fill();
+    x.fillStyle = 'rgba(234,255,246,.6)';
+    x.font = `500 28px ${F}`;
+    x.fillText(s[0], sx + 28, 985);
+    x.fillStyle = '#eafff6';
+    x.font = `700 58px ${M}`;
+    x.fillText(s[1], sx + 28, 1062);
+  });
+  // 분배 막대
+  let bx = 80;
+  const tot = d.parts.reduce((a, b) => a + b.v, 0) || 1;
+  d.parts.forEach(p => {
+    const w = 920 * p.v / tot;
+    if (w < 1) return;
+    x.fillStyle = p.c;
+    x.fillRect(bx, 1150, w - 4, 26);
+    bx += w;
+  });
+  x.fillStyle = 'rgba(234,255,246,.7)';
+  x.font = `500 26px ${F}`;
+  x.fillText(d.parts.map(p => `${p.n} ${Math.round(p.v / tot * 100)}%`).join('  ·  '), 80, 1218);
+  x.fillStyle = 'rgba(234,255,246,.4)';
+  x.font = `400 22px ${F}`;
+  x.fillText(`소나무 1그루 = 연 ${CL.CONST.PINE_KG_PER_YEAR}kg · 하루 약 ${CL.CONST.PINE_G_PER_DAY}g 흡수 가정  #탄소중립 #캠퍼스탄소순환`, 80, 1290);
+}
+function roundRect(x, a, b, w, h, r) {
+  x.beginPath();
+  x.moveTo(a + r, b);
+  x.arcTo(a + w, b, a + w, b + h, r);
+  x.arcTo(a + w, b + h, a, b + h, r);
+  x.arcTo(a, b + h, a, b, r);
+  x.arcTo(a, b, a + w, b, r);
+  x.closePath();
+}
+function Impact({
+  eng,
+  toast
+}) {
+  const d = eng.today(),
+    P = CL.CONST.PINE_G_PER_DAY;
+  const trees = d.captured / P;
+  const ref = useRef();
+  const date = eng.latest ? new Date(eng.latest.ts) : new Date();
+  const info = {
+    date: `${date.getFullYear()}.${U.pad(date.getMonth() + 1)}.${U.pad(date.getDate())}`,
+    site: '본캠퍼스 학생식당',
+    trees: U.f1(trees),
+    cap: U.f0(d.captured),
+    use: U.f0(d.gh + d.mu),
+    bc: U.f0(d.bc),
+    parts: [{
+      n: '온실',
+      v: d.gh,
+      c: '#5eeabe'
+    }, {
+      n: '버섯',
+      v: d.mu,
+      c: '#f4c96b'
+    }, {
+      n: '생체탄',
+      v: d.bc,
+      c: '#b58a63'
+    }]
+  };
+  const make = () => {
+    const c = document.createElement('canvas');
+    drawImpact(c, info);
+    return c;
+  };
+  const save = () => {
+    const c = make();
+    const a = document.createElement('a');
+    a.download = `carbonloop-${info.date}.png`;
+    a.href = c.toDataURL('image/png');
+    a.click();
+    toast('카드 이미지를 저장했어요.');
+  };
+  const share = () => {
+    const c = make();
+    c.toBlob(async b => {
+      const file = new File([b], 'carbonloop.png', {
+        type: 'image/png'
+      });
+      if (navigator.canShare && navigator.canShare({
+        files: [file]
+      })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: '카본루프 오늘의 임팩트',
+            text: `오늘 소나무 ${info.trees}그루만큼의 CO₂를 다시 썼어요.`
+          });
+        } catch (e) {}
+      } else {
+        save();
+        toast('이 브라우저는 바로 공유를 지원하지 않아 이미지로 저장했어요.');
+      }
+    });
+  };
+  useEffect(() => {
+    if (ref.current) drawImpact(ref.current, info);
+  });
+  const totTrees = eng.totals.captured / P;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "04 \uC784\uD329\uD2B8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "impact-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "impact-prev"
+  }, /*#__PURE__*/React.createElement("canvas", {
+    ref: ref
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uC624\uB298\uC758 \uC784\uD329\uD2B8",
+    sub: "\uD558\uB8E8 \uD3EC\uC9D1\uB7C9 \xF7 \uC18C\uB098\uBB34 1\uADF8\uB8E8\uC758 \uD558\uB8E8 \uD761\uC218\uB7C9"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "calc"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uC624\uB298 \uD3EC\uC9D1\uB7C9"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, U.f0(d.captured), " g")), /*#__PURE__*/React.createElement("div", {
+    className: "op"
+  }, "\xF7"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uC18C\uB098\uBB34 1\uADF8\uB8E8/\uC77C"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, P, " g")), /*#__PURE__*/React.createElement("div", {
+    className: "op"
+  }, "="), /*#__PURE__*/React.createElement("div", {
+    className: "res"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD658\uC0B0"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, U.f1(trees), " \uADF8\uB8E8"))), /*#__PURE__*/React.createElement("p", {
+    className: "note"
+  }, "\uAC00\uC815: \uC18C\uB098\uBB34 \uD55C \uADF8\uB8E8\uB294 \uC5F0 \uC57D ", CL.CONST.PINE_KG_PER_YEAR, "kg, \uD558\uB8E8 \uC57D ", P, "g\uC758 CO\u2082\uB97C \uD761\uC218\uD574\uC694. \uC774 \uAC12\uC740 \uC124\uC815 \uC0C1\uC218(PINE_G_PER_DAY)\uB85C \uBD84\uB9AC\uB3FC \uC788\uC5B4\uC694.")), /*#__PURE__*/React.createElement(Card, {
+    title: "\uB204\uC801"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row2"
+  }, /*#__PURE__*/React.createElement(Stat, {
+    label: "\uB204\uC801 \uD3EC\uC9D1",
+    value: U.f1(eng.totals.captured / 1000),
+    unit: "kg"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    label: "\uC18C\uB098\uBB34\xB7\uC77C \uD658\uC0B0",
+    value: U.f0(totTrees),
+    unit: "\uADF8\uB8E8\xB7\uC77C"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "row2 btns"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn primary",
+    onClick: share
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "share",
+    size: 16
+  }), "SNS \uACF5\uC720"), /*#__PURE__*/React.createElement("button", {
+    className: "btn",
+    onClick: save
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "download",
+    size: 16
+  }), "\uC774\uBBF8\uC9C0 \uC800\uC7A5")))));
+}
+
+/* ---------- 6. 알림 ---------- */
+function Alerts({
+  eng
+}) {
+  const [f, setF] = useState('all');
+  const list = eng.alerts.filter(a => f === 'all' || a.kind === f);
+  useEffect(() => {
+    eng.alerts.forEach(a => a.read = true);
+  }, [eng.alerts.length]);
+  const kL = {
+    danger: '위험 농도',
+    sensor: '센서 이상',
+    conn: '연결'
+  };
+  const perm = typeof Notification !== 'undefined' ? Notification.permission : 'unsupported';
+  const ask = async () => {
+    if (typeof Notification === 'undefined') return;
+    const p = await Notification.requestPermission();
+    eng.setSettings({
+      browserNotify: p === 'granted'
+    });
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "05 \uC54C\uB9BC"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uD478\uC2DC \uC54C\uB9BC",
+    sub: "1500ppm \uCD08\uACFC \xB7 \uC13C\uC11C \uC774\uC0C1 \xB7 \uC5F0\uACB0 \uB04A\uAE40 \uC2DC \uBC1C\uC1A1",
+    right: /*#__PURE__*/React.createElement(Seg, {
+      value: f,
+      onChange: setF,
+      options: [{
+        v: 'all',
+        l: '전체'
+      }, {
+        v: 'danger',
+        l: '위험'
+      }, {
+        v: 'sensor',
+        l: '센서'
+      }, {
+        v: 'conn',
+        l: '연결'
+      }]
+    })
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "perm"
+  }, /*#__PURE__*/React.createElement("span", null, "\uAE30\uAE30 \uC54C\uB9BC \uAD8C\uD55C: ", /*#__PURE__*/React.createElement("b", null, perm === 'granted' ? '허용됨' : perm === 'denied' ? '차단됨' : perm === 'unsupported' ? '미지원 브라우저' : '미설정'), " \xB7 \uC571 \uC548 \uBC30\uB108\uB294 \uD56D\uC0C1 \uD45C\uC2DC\uB3FC\uC694."), perm === 'default' && /*#__PURE__*/React.createElement("button", {
+    className: "btn sm",
+    onClick: ask
+  }, "\uAD8C\uD55C \uC694\uCCAD")), list.length ? /*#__PURE__*/React.createElement("ul", {
+    className: "alerts"
+  }, list.map(a => /*#__PURE__*/React.createElement("li", {
+    key: a.id,
+    className: 'al lv-' + a.level
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "al-bar"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "al-b"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "al-h"
+  }, /*#__PURE__*/React.createElement("b", null, a.title), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, U.hms(a.ts).slice(0, 5))), /*#__PURE__*/React.createElement("p", null, a.body), /*#__PURE__*/React.createElement(Badge, {
+    tone: "mute"
+  }, kL[a.kind] || a.kind))))) : /*#__PURE__*/React.createElement(Empty, null, "\uC54C\uB9BC\uC774 \uC5C6\uC5B4\uC694. \uC2DC\uC5F0 \uD328\uB110\uC5D0\uC11C \uC704\uD5D8\xB7\uACE0\uC7A5\xB7\uB04A\uAE40 \uC0C1\uD669\uC744 \uC7AC\uD604\uD574\uBCF4\uC138\uC694.")));
+}
+
+/* ---------- 7. 설정 ---------- */
+function NumRow({
+  label,
+  hint,
+  value,
+  onChange,
+  min,
+  max,
+  step = 10,
+  unit = 'ppm'
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "set-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, label), hint && /*#__PURE__*/React.createElement("span", null, hint)), /*#__PURE__*/React.createElement("div", {
+    className: "num"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => onChange(Math.max(min, value - step))
+  }, "\u2212"), /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    value: value,
+    min: min,
+    max: max,
+    step: step,
+    onChange: e => onChange(Math.max(min, Math.min(max, +e.target.value || 0)))
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, unit), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onChange(Math.min(max, value + step))
+  }, "+")));
+}
+function Settings({
+  eng,
+  toast,
+  restart
+}) {
+  const S = eng.settings,
+    set = p => eng.setSettings(p),
+    r = eng.latest;
+  const valid = S.low < S.targetMin && S.targetMin < S.targetMax && S.targetMax < S.high && S.high < S.danger;
+  const [fb, setFb] = useState(S.firebaseUrl);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "06 \uC124\uC815"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid-2"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uC6B4\uC804 \uBAA8\uB4DC"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "set-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "\uC81C\uC5B4 \uBAA8\uB4DC"), /*#__PURE__*/React.createElement("span", null, "\uC218\uB3D9 \uBAA8\uB4DC\uC5D0\uC11C\uB3C4 1500ppm \uCD08\uACFC \uC2DC \uC548\uC804 \uC778\uD130\uB77D\uC740 \uC790\uB3D9")), /*#__PURE__*/React.createElement(Seg, {
+    value: S.mode,
+    onChange: v => {
+      set({
+        mode: v
+      });
+      if (v === 'manual') eng.setManual({
+        ...eng.cmd
+      });
+    },
+    options: [{
+      v: 'auto',
+      l: '자동 (AI)'
+    }, {
+      v: 'manual',
+      l: '수동'
+    }]
+  })), /*#__PURE__*/React.createElement("div", {
+    className: 'manual ' + (S.mode === 'manual' ? '' : 'dim')
+  }, [['ghValve', '온실 밸브', '열림', '닫힘'], ['muValve', '버섯 밸브', '열림', '닫힘'], ['bcValve', '생체탄 밸브', '열림', '닫힘'], ['fan', '쿨링팬', '작동', '대기']].map(([k, l, a, b]) => /*#__PURE__*/React.createElement("div", {
+    key: k,
+    className: "set-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, l), /*#__PURE__*/React.createElement("span", null, "\uD604\uC7AC ", r && r.act[k] ? a : b)), /*#__PURE__*/React.createElement(Toggle, {
+    on: S.mode === 'manual' ? eng.manual[k] : !!(r && r.act[k]),
+    disabled: S.mode !== 'manual',
+    onChange: v => eng.setManual({
+      [k]: v
+    })
+  }))), S.mode !== 'manual' && /*#__PURE__*/React.createElement("p", {
+    className: "note"
+  }, "\uC218\uB3D9 \uC81C\uC5B4\uB294 \u2018\uC218\uB3D9\u2019 \uBAA8\uB4DC\uC5D0\uC11C \uC0AC\uC6A9\uD560 \uC218 \uC788\uC5B4\uC694."))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC628\uC2E4 \uBAA9\uD45C \xB7 \uC784\uACC4\uAC12",
+    sub: "AI \uC790\uB3D9 \uC81C\uC5B4 \uADDC\uCE59",
+    right: valid ? /*#__PURE__*/React.createElement(Badge, {
+      tone: "ok"
+    }, "\uADDC\uCE59 \uC720\uD6A8") : /*#__PURE__*/React.createElement(Badge, {
+      tone: "danger"
+    }, "\uC21C\uC11C \uC624\uB958")
+  }, /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uC8FC\uC785 \uC2DC\uC791 (\uBBF8\uB9CC)",
+    hint: "\uBC38\uBE0C \uC5F4\uB9BC",
+    value: S.low,
+    onChange: v => set({
+      low: v
+    }),
+    min: 400,
+    max: 2000
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uBAA9\uD45C \uD558\uD55C",
+    value: S.targetMin,
+    onChange: v => set({
+      targetMin: v
+    }),
+    min: 400,
+    max: 2000
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uBAA9\uD45C \uC0C1\uD55C",
+    value: S.targetMax,
+    onChange: v => set({
+      targetMax: v
+    }),
+    min: 400,
+    max: 2000
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uC8FC\uC785 \uC911\uC9C0 (\uCD08\uACFC)",
+    hint: "\uBC38\uBE0C \uB2EB\uD798",
+    value: S.high,
+    onChange: v => set({
+      high: v
+    }),
+    min: 400,
+    max: 3000
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uC704\uD5D8 (\uCD08\uACFC)",
+    hint: "\uCFE8\uB9C1\uD32C + \uC54C\uB9BC",
+    value: S.danger,
+    onChange: v => set({
+      danger: v
+    }),
+    min: 600,
+    max: 5000,
+    step: 50
+  }), !valid && /*#__PURE__*/React.createElement("p", {
+    className: "note t-danger"
+  }, "\uC8FC\uC785 \uC2DC\uC791 < \uBAA9\uD45C \uD558\uD55C < \uBAA9\uD45C \uC0C1\uD55C < \uC8FC\uC785 \uC911\uC9C0 < \uC704\uD5D8 \uC21C\uC11C\uC5EC\uC57C \uD574\uC694."), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost sm",
+    onClick: () => set({
+      low: 800,
+      targetMin: 900,
+      targetMax: 1100,
+      high: 1200,
+      danger: 1500
+    })
+  }, "\uAE30\uBCF8\uAC12(800/1200/1500)\uC73C\uB85C")), /*#__PURE__*/React.createElement(Card, {
+    title: "\uB77C\uC6B0\uD305 \xB7 \uD1A0\uC591 \xB7 \uC774\uC0C1\uD0D0\uC9C0"
+  }, /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uBC84\uC12F \uBAA9\uD45C \uD558\uD55C",
+    value: S.muMin,
+    onChange: v => set({
+      muMin: v
+    }),
+    min: 1000,
+    max: 8000,
+    step: 100
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uBC84\uC12F \uBAA9\uD45C \uC0C1\uD55C",
+    value: S.muMax,
+    onChange: v => set({
+      muMax: v
+    }),
+    min: 1000,
+    max: 9000,
+    step: 100
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uD1A0\uC591 \uC218\uBD84 \uD558\uD55C",
+    value: S.soilMin,
+    onChange: v => set({
+      soilMin: v
+    }),
+    min: 5,
+    max: 80,
+    step: 1,
+    unit: "%"
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uD1A0\uC591 \uC218\uBD84 \uC0C1\uD55C",
+    value: S.soilMax,
+    onChange: v => set({
+      soilMax: v
+    }),
+    min: 5,
+    max: 90,
+    step: 1,
+    unit: "%"
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uC774\uB3D9\uD3C9\uADE0 \uCC3D N",
+    value: S.anomalyN,
+    onChange: v => set({
+      anomalyN: v
+    }),
+    min: 8,
+    max: 60,
+    step: 2,
+    unit: "\uAC1C"
+  }), /*#__PURE__*/React.createElement(NumRow, {
+    label: "\uC774\uC0C1 \uD310\uC815 k",
+    value: S.anomalyK,
+    onChange: v => set({
+      anomalyK: v
+    }),
+    min: 2,
+    max: 6,
+    step: 0.5,
+    unit: "\u03C3"
+  })), /*#__PURE__*/React.createElement(Card, {
+    title: "\uB370\uC774\uD130 \uC18C\uC2A4 \xB7 \uD654\uBA74"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "set-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "\uB370\uBAA8 \uBAA8\uB4DC"), /*#__PURE__*/React.createElement("span", null, S.demo ? '시뮬레이터가 ESP32와 같은 형식으로 데이터를 보내요' : 'Firebase에서 실제 ESP32 데이터를 받아요')), /*#__PURE__*/React.createElement(Toggle, {
+    on: S.demo,
+    onChange: v => {
+      set({
+        demo: v
+      });
+      restart();
+      toast(v ? '데모 모드로 전환했어요.' : 'Firebase 실시간 모드로 전환했어요.');
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "set-row col-r"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Firebase RTDB URL"), /*#__PURE__*/React.createElement("span", null, "\uC608: https://carbonloop-default-rtdb.asia-southeast1.firebasedatabase.app")), /*#__PURE__*/React.createElement("div", {
+    className: "fb"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: fb,
+    onChange: e => setFb(e.target.value),
+    placeholder: "https://\u2026firebasedatabase.app"
+  }), /*#__PURE__*/React.createElement("input", {
+    value: S.deviceId,
+    onChange: e => set({
+      deviceId: e.target.value
+    }),
+    style: {
+      width: 110
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn sm",
+    onClick: () => {
+      set({
+        firebaseUrl: fb
+      });
+      if (!S.demo) restart();
+      toast('Firebase 설정을 저장했어요.');
+    }
+  }, "\uC800\uC7A5")), !S.demo && eng.source && eng.source.error && /*#__PURE__*/React.createElement("p", {
+    className: "note t-danger"
+  }, eng.source.error)), /*#__PURE__*/React.createElement("div", {
+    className: "set-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "\uC7AC\uC0DD \uBC30\uC18D"), /*#__PURE__*/React.createElement("span", null, "\uC2DC\uBBAC\uB808\uC774\uD130 \uC2DC\uAC04 \uD750\uB984")), /*#__PURE__*/React.createElement(Seg, {
+    value: S.speed,
+    onChange: v => set({
+      speed: v
+    }),
+    options: [{
+      v: 1,
+      l: '1x'
+    }, {
+      v: 10,
+      l: '10x'
+    }, {
+      v: 60,
+      l: '60x'
+    }]
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "set-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "\uB2E4\uD06C \uBAA8\uB4DC")), /*#__PURE__*/React.createElement(Toggle, {
+    on: S.dark,
+    onChange: v => set({
+      dark: v
+    })
+  })))));
+}
+
+/* ---------- 8. 소개 ---------- */
+function About({
+  eng,
+  toast
+}) {
+  const [sites, setSites] = useState([{
+    n: '본캠퍼스 학생식당',
+    s: '운영 중',
+    on: true
+  }]);
+  const roadmap = [{
+    k: '1단계',
+    t: '캠퍼스',
+    d: '학생식당 음식물쓰레기 → 온실·버섯 챔버·화단',
+    m: '거점 1곳 · 수요처 3곳'
+  }, {
+    k: '2단계',
+    t: '지역',
+    d: '인근 대학·급식센터·도시농장을 잇는 거점 네트워크',
+    m: '거점 5~10곳 · 통합 대시보드'
+  }, {
+    k: '3단계',
+    t: '도시',
+    d: '공공 음식물 처리시설 CO₂를 스마트팜·산업 수요처로',
+    m: '도시 단위 탄소 순환망'
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "07 \uC18C\uAC1C"
+  }, /*#__PURE__*/React.createElement("section", {
+    className: "hero"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "eyebrow mono"
+  }, "WHY CARBON LOOP"), /*#__PURE__*/React.createElement("h2", null, "\uD0C4\uC18C\uB97C \uB118\uCE58\uAC8C \uBC30\uCD9C\uD558\uBA74\uC11C,", /*#__PURE__*/React.createElement("br", null), "\uC815\uC791 \uD544\uC694\uD55C \uD0C4\uC18C\uB294 \uC218\uC785\uD55C\uB2E4."), /*#__PURE__*/React.createElement("p", null, "\uB4DC\uB77C\uC774\uC544\uC774\uC2A4\xB7\uD0C4\uC0B0\uC74C\uB8CC\xB7\uC6A9\uC811\uAC00\uC2A4\uC5D0 \uC4F0\uB294 \uC0B0\uC5C5\uC6A9 CO\u2082\uB294 \uC11D\uC720\uD654\uD559\xB7\uC554\uBAA8\uB2C8\uC544 \uACF5\uC815\uC758 \uBD80\uC0B0\uBB3C\uC5D0\uB9CC \uC758\uC874\uD574\uC694. \uACF5\uC7A5 \uAC00\uB3D9\uB960\uC774 \uB5A8\uC5B4\uC9C0\uBA74 CO\u2082 \uD488\uADC0\uAC00 \uBC18\uBCF5\uB429\uB2C8\uB2E4.")), /*#__PURE__*/React.createElement("div", {
+    className: "grid-3 facts"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "fact"
+  }, /*#__PURE__*/React.createElement("b", {
+    className: "fact-n mono"
+  }, "29", /*#__PURE__*/React.createElement("small", null, "%")), /*#__PURE__*/React.createElement("span", null, "\uC0DD\uC0B0\uB2A5\uB825 \uB300\uBE44 \uCD5C\uB300 \uBD80\uC871\uB7C9")), /*#__PURE__*/React.createElement("div", {
+    className: "fact"
+  }, /*#__PURE__*/React.createElement("b", {
+    className: "fact-n mono"
+  }, "13.6", /*#__PURE__*/React.createElement("small", null, "%")), /*#__PURE__*/React.createElement("span", null, "\uB4DC\uB77C\uC774\uC544\uC774\uC2A4 \uAC00\uACA9 \uC0C1\uC2B9")), /*#__PURE__*/React.createElement("div", {
+    className: "fact"
+  }, /*#__PURE__*/React.createElement("b", {
+    className: "fact-n mono"
+  }, "0", /*#__PURE__*/React.createElement("small", null, "\uACF3")), /*#__PURE__*/React.createElement("span", null, "\uC74C\uC2DD\uBB3C \uBC1C\uD6A8 CO\u2082\uB97C \uB418\uC4F0\uB294 \uCEA0\uD37C\uC2A4 (\uC9C0\uAE08\uAE4C\uC9C0)"))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uCE74\uBCF8\uB8E8\uD504\uC758 \uB2F5",
+    sub: "\uBC84\uB824\uC9C0\uB294 \uBC1C\uD6A8 CO\u2082\uB97C \uCEA0\uD37C\uC2A4 \uC548\uC5D0\uC11C \uD3EC\uC9D1\xB7\uBD84\uBC30\xB7\uACE0\uC815"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "about-loop"
+  }, /*#__PURE__*/React.createElement(LoopDiagram, {
+    size: 320
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid-3 hw"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "\uC13C\uC11C"), /*#__PURE__*/React.createElement("b", null, "MH-Z19B \xB7 DHT22 \xB7 \uD1A0\uC591\uC218\uBD84")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "\uC81C\uC5B4"), /*#__PURE__*/React.createElement("b", null, "ESP32 + AI \uD310\uB2E8 \uC5D4\uC9C4")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "\uAD6C\uB3D9 \xB7 \uC548\uC804"), /*#__PURE__*/React.createElement("b", null, "12V \uC194\uB808\uB178\uC774\uB4DC \xB7 \uCFE8\uB9C1\uD32C")))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uD655\uC7A5 \uB85C\uB4DC\uB9F5"
+  }, /*#__PURE__*/React.createElement("ol", {
+    className: "road"
+  }, roadmap.map((r, i) => /*#__PURE__*/React.createElement("li", {
+    key: i
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, r.k), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, r.t), /*#__PURE__*/React.createElement("p", null, r.d), /*#__PURE__*/React.createElement("em", {
+    className: "mono"
+  }, r.m)))))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uAD00\uB9AC \uC911\uC778 \uAC70\uC810",
+    right: /*#__PURE__*/React.createElement(Badge, {
+      tone: "mute"
+    }, sites.length, "\uACF3")
+  }, /*#__PURE__*/React.createElement("ul", {
+    className: "sites"
+  }, sites.map((s, i) => /*#__PURE__*/React.createElement("li", {
+    key: i
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "pin",
+    size: 16
+  }), /*#__PURE__*/React.createElement("b", null, s.n), /*#__PURE__*/React.createElement(Badge, {
+    tone: s.on ? 'ok' : 'mute',
+    dot: true
+  }, s.s)))), /*#__PURE__*/React.createElement("button", {
+    className: "btn add",
+    onClick: () => {
+      const n = ['인문관 카페테리아', '기숙사 식당', '지역 급식센터'][sites.length - 1];
+      if (!n) return toast('데모에서는 거점을 3곳까지 추가할 수 있어요.');
+      setSites([...sites, {
+        n,
+        s: '설치 예정',
+        on: false
+      }]);
+      toast(`‘${n}’ 거점을 추가했어요 (설치 예정).`);
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "plus",
+    size: 16
+  }), "\uB2E4\uB978 \uC7A5\uC18C \uCD94\uAC00")));
+}
+Object.assign(window, {
+  Impact,
+  Alerts,
+  Settings,
+  About,
+  drawImpact
+});
+</script>
+<script>
+/* cl-live.jsx (JSX 미리 변환됨) */
+/* Carbon Loop — 실물 연결 화면 (ESP32 → 구글 시트(Apps Script) → 이 화면)
+   - 시뮬레이터(데모 모드)와 완전히 분리되어 있어요. 이 화면은 실제 장치 데이터만 보여줘요.
+   - 판단은 ESP32(안전 규칙)와 Gemini(5분마다)가 하고, 이 화면은 결과와 이유를 보여주기만 해요. */
+
+// Apps Script 웹앱 주소를 여기에 넣으면 기본값이 돼요. (화면 아래 '연결 설정'에서 바꿔도 됨)
+const CL_LIVE_URL = '';
+const LIVE_POLL_MS = 5000; // 5초마다 새로고침
+const DEVICE_STALE_S = 35; // ESP32는 10초마다 보냄 → 35초 넘게 없으면 끊김
+const GH_TARGET = [900, 1100];
+function liveUrl() {
+  try {
+    return localStorage.getItem('cl.liveUrl') || CL_LIVE_URL;
+  } catch (e) {
+    return CL_LIVE_URL;
+  }
+}
+
+/* ---------- 예시 데이터 (화면 미리보기 전용, 실측 아님) ---------- */
+function makePreview() {
+  const now = Date.now(),
+    rows = [];
+  let g = 640,
+    c = 520,
+    green = true,
+    mode = 'RULE',
+    lo = 800,
+    hi = 1200,
+    gp = 100,
+    gMs = 0,
+    cMs = 0;
+  for (let i = 0; i < 360; i++) {
+    const ts = now - (359 - i) * 10000;
+    if (i === 60) mode = 'AI';
+    if (mode === 'AI') {
+      lo = 850;
+      hi = 1120;
+    }
+    let ev = '';
+    if (green) g += 6 + Math.random() * 3;else g -= 3 + Math.random() * 2;
+    if (!green) c += 14 + Math.random() * 6;else c -= 1;
+    c = Math.max(450, Math.min(5000, c));
+    if (green && g > hi) {
+      green = false;
+      ev = mode === 'AI' ? 'AI_TO_CHAMBER' : 'TO_CHAMBER';
+    } else if (!green && g < lo) {
+      green = true;
+      ev = mode === 'AI' ? 'AI_TO_GREEN' : 'TO_GREEN';
+    }
+    if (green) gMs += 10;else cMs += 10;
+    gp = Math.round(gMs / (gMs + cMs) * 100);
+    rows.push({
+      ts,
+      t: i * 10,
+      g: Math.round(g + (Math.random() - .5) * 20),
+      ga: Math.round(g),
+      c: Math.round(c + (Math.random() - .5) * 30),
+      ca: Math.round(c),
+      route: green ? 'GREEN' : 'CHAMBER',
+      fan: 0,
+      gp,
+      tc: 23.4,
+      h: 51,
+      ev,
+      mode,
+      lo,
+      hi
+    });
+  }
+  const aiLog = [{
+    ts: now - 40000,
+    valid: true,
+    route: 'GREEN',
+    lo: 850,
+    hi: 1120,
+    reason: '온실 평균 980ppm, 분당 +28ppm로 오르는 중이라 목표 안에서 온실 공급을 이어가요. 1,120 넘으면 챔버로 돌려요.',
+    alert: ''
+  }, {
+    ts: now - 340000,
+    valid: true,
+    route: 'CHAMBER',
+    lo: 850,
+    hi: 1120,
+    reason: '온실이 1,090ppm에 분당 +35ppm라 3분 안에 상한에 닿을 것으로 보여 미리 챔버로 보내요.',
+    alert: ''
+  }, {
+    ts: now - 640000,
+    valid: false,
+    route: '',
+    lo: '',
+    hi: '',
+    reason: 'AI 응답 없음 → ESP32는 기존 규칙(800/1200)으로 제어해요.',
+    alert: ''
+  }];
+  return {
+    ok: true,
+    now,
+    rows,
+    ai: {
+      valid: true
+    },
+    aiLog,
+    preview: true
+  };
+}
+
+/* ---------- 데이터 불러오기 ---------- */
+function useLiveData(url, preview) {
+  const [st, setSt] = useState({
+    data: null,
+    err: '',
+    lastOk: 0,
+    loading: false
+  });
+  const busy = useRef(false);
+  useEffect(() => {
+    if (preview) {
+      setSt({
+        data: makePreview(),
+        err: '',
+        lastOk: Date.now(),
+        loading: false
+      });
+      return;
+    }
+    if (!url) {
+      setSt({
+        data: null,
+        err: '',
+        lastOk: 0,
+        loading: false
+      });
+      return;
+    }
+    let alive = true;
+    const pull = async () => {
+      if (busy.current) return;
+      busy.current = true;
+      try {
+        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'n=360&_=' + Date.now());
+        const j = await res.json();
+        if (!alive) return;
+        if (!j.ok) throw new Error(j.error || '서버 오류');
+        setSt({
+          data: j,
+          err: '',
+          lastOk: Date.now(),
+          loading: false
+        });
+      } catch (e) {
+        if (alive) setSt(s => ({
+          ...s,
+          err: String(e.message || e),
+          loading: false
+        }));
+      } finally {
+        busy.current = false;
+      }
+    };
+    setSt(s => ({
+      ...s,
+      loading: true
+    }));
+    pull();
+    const t = setInterval(pull, LIVE_POLL_MS);
+    return () => {
+      alive = false;
+      clearInterval(t);
+    };
+  }, [url, preview]);
+  return st;
+}
+
+/* ---------- 작은 조각들 ---------- */
+const ROUTE_L = {
+  GREEN: '온실',
+  CHAMBER: '버섯챔버'
+};
+const EV_L = {
+  TO_GREEN: '규칙 → 온실',
+  TO_CHAMBER: '규칙 → 챔버',
+  AI_TO_GREEN: 'AI → 온실',
+  AI_TO_CHAMBER: 'AI → 챔버',
+  OVER_SUPPLY: '공급 과다'
+};
+const agoText = s => s < 5 ? '방금' : s < 60 ? `${Math.round(s)}초 전` : s < 3600 ? `${Math.floor(s / 60)}분 전` : `${Math.floor(s / 3600)}시간 전`;
+function LiveDest({
+  n,
+  name,
+  sub,
+  ppm,
+  raw,
+  range,
+  scaleMax,
+  on,
+  tone,
+  note
+}) {
+  const pct = v => Math.min(100, Math.max(0, (v - 400) / (scaleMax - 400) * 100));
+  const met = ppm != null && range && ppm >= range[0] && ppm <= range[1];
+  return /*#__PURE__*/React.createElement("div", {
+    className: 'dest ' + (on ? 'flowing' : '')
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "dest-h"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dest-n mono"
+  }, n), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, name), /*#__PURE__*/React.createElement("span", null, sub)), /*#__PURE__*/React.createElement(Badge, {
+    tone: on ? 'info' : 'mute',
+    dot: on
+  }, on ? '밸브 열림 · 공급 중' : '밸브 닫힘')), /*#__PURE__*/React.createElement("div", {
+    className: "dest-v"
+  }, /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, ppm == null ? '—' : U.f0(ppm)), /*#__PURE__*/React.createElement("span", null, "ppm \xB7 30\uCD08 \uD3C9\uADE0"), range && ppm != null && /*#__PURE__*/React.createElement(Badge, {
+    tone: met ? 'ok' : 'warn'
+  }, met ? '목표 구간' : ppm < range[0] ? '목표보다 낮음' : '목표보다 높음'), tone && /*#__PURE__*/React.createElement(Badge, {
+    tone: tone.t
+  }, tone.l)), /*#__PURE__*/React.createElement("div", {
+    className: "rangebar"
+  }, range && /*#__PURE__*/React.createElement("i", {
+    className: "band",
+    style: {
+      left: pct(range[0]) + '%',
+      width: pct(range[1]) - pct(range[0]) + '%'
+    }
+  }), ppm != null && /*#__PURE__*/React.createElement("i", {
+    className: "cur",
+    style: {
+      left: pct(ppm) + '%'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "dest-f mono"
+  }, /*#__PURE__*/React.createElement("span", null, note), /*#__PURE__*/React.createElement("span", null, "\uC21C\uAC04\uAC12 ", /*#__PURE__*/React.createElement("b", null, raw == null ? '—' : U.f0(raw)))));
+}
+function PpmChart({
+  rows,
+  keyRaw,
+  keyAvg,
+  band,
+  lines,
+  yMax,
+  yMinTop = 0,
+  height = 200,
+  showLoHi
+}) {
+  if (!RC.ComposedChart) return /*#__PURE__*/React.createElement("div", {
+    className: "ph"
+  }, "\uCC28\uD2B8 \uB85C\uB529 \uC911\u2026");
+  const {
+    ResponsiveContainer,
+    ComposedChart,
+    Line,
+    XAxis,
+    YAxis,
+    ReferenceArea,
+    ReferenceLine,
+    Tooltip
+  } = RC;
+  const evs = rows.filter(r => r.ev && EV_L[r.ev] && r.ev !== 'OVER_SUPPLY');
+  return /*#__PURE__*/React.createElement(ResponsiveContainer, {
+    width: "100%",
+    height: height
+  }, /*#__PURE__*/React.createElement(ComposedChart, {
+    data: rows,
+    margin: {
+      top: 8,
+      right: 8,
+      left: -14,
+      bottom: 0
+    }
+  }, band && /*#__PURE__*/React.createElement(ReferenceArea, {
+    y1: band[0],
+    y2: band[1],
+    fill: "var(--ok)",
+    fillOpacity: 0.1,
+    stroke: "none",
+    ifOverflow: "hidden"
+  }), lines.map(l => /*#__PURE__*/React.createElement(ReferenceLine, {
+    key: l.y,
+    y: l.y,
+    stroke: l.c,
+    strokeDasharray: "4 3",
+    strokeOpacity: 0.7,
+    ifOverflow: "hidden",
+    label: {
+      value: l.l,
+      position: 'insideTopRight',
+      fontSize: 10,
+      fill: l.c
+    }
+  })), evs.map((r, i) => /*#__PURE__*/React.createElement(ReferenceLine, {
+    key: 'e' + i,
+    x: r.ts,
+    stroke: r.ev.includes('GREEN') ? 'var(--c-gh)' : 'var(--c-mu)',
+    strokeOpacity: 0.55
+  })), /*#__PURE__*/React.createElement(XAxis, {
+    dataKey: "ts",
+    type: "number",
+    scale: "time",
+    domain: ['dataMin', 'dataMax'],
+    tickFormatter: t => U.hms(t).slice(0, 5),
+    tick: {
+      fontSize: 10,
+      fill: 'var(--muted)'
+    },
+    stroke: "var(--line)",
+    minTickGap: 40
+  }), /*#__PURE__*/React.createElement(YAxis, {
+    domain: [dataMin => Math.max(0, Math.floor((dataMin - 100) / 100) * 100), dataMax => Math.min(yMax, Math.max(yMinTop, Math.ceil((dataMax + 150) / 100) * 100))],
+    tickCount: 6,
+    tick: {
+      fontSize: 10,
+      fill: 'var(--muted)'
+    },
+    stroke: "var(--line)",
+    allowDataOverflow: true
+  }), /*#__PURE__*/React.createElement(Tooltip, {
+    content: /*#__PURE__*/React.createElement(ChartTip, {
+      fmt: t => U.hms(t)
+    })
+  }), showLoHi && /*#__PURE__*/React.createElement(Line, {
+    dataKey: "lo",
+    type: "stepAfter",
+    stroke: "var(--info)",
+    strokeDasharray: "2 3",
+    dot: false,
+    strokeWidth: 1,
+    isAnimationActive: false,
+    name: "\uC804\uD658 \uD558\uD55C"
+  }), showLoHi && /*#__PURE__*/React.createElement(Line, {
+    dataKey: "hi",
+    type: "stepAfter",
+    stroke: "var(--warn)",
+    strokeDasharray: "2 3",
+    dot: false,
+    strokeWidth: 1,
+    isAnimationActive: false,
+    name: "\uC804\uD658 \uC0C1\uD55C"
+  }), /*#__PURE__*/React.createElement(Line, {
+    dataKey: keyRaw,
+    stroke: "var(--muted)",
+    dot: false,
+    strokeWidth: 1,
+    strokeOpacity: 0.6,
+    isAnimationActive: false,
+    name: "\uC21C\uAC04\uAC12"
+  }), /*#__PURE__*/React.createElement(Line, {
+    dataKey: keyAvg,
+    stroke: "var(--text)",
+    dot: false,
+    strokeWidth: 2,
+    isAnimationActive: false,
+    name: "30\uCD08 \uD3C9\uADE0"
+  })));
+}
+
+/* ---------- 화면 ---------- */
+function Live() {
+  const now = useNow(1000);
+  const [url, setUrl] = useState(liveUrl);
+  const [draft, setDraft] = useState(liveUrl);
+  const [preview, setPreview] = useState(false);
+  const {
+    data,
+    err,
+    lastOk,
+    loading
+  } = useLiveData(url, preview);
+  const save = () => {
+    const u = draft.trim();
+    try {
+      localStorage.setItem('cl.liveUrl', u);
+    } catch (e) {}
+    setUrl(u);
+    setPreview(false);
+  };
+  const rows = (data && data.rows || []).filter(r => r.ts && r.ga !== '' && r.ga != null);
+  const L = rows[rows.length - 1];
+  const devAge = L ? (now - L.ts) / 1000 : Infinity;
+  const devOn = !!L && devAge < DEVICE_STALE_S;
+  const serverOk = preview || !!lastOk && !err;
+  const aiLog = data && data.aiLog || [];
+  const lastValid = aiLog.find(a => a.valid);
+  const isAI = L && L.mode === 'AI';
+  const green = L && L.route === 'GREEN';
+  const fanOn = L && Number(L.fan) === 1;
+  const lo = L && Number(L.lo) || 800,
+    hi = L && Number(L.hi) || 1200;
+
+  // 최근 구간 분배 비율 (행 수 기준 = 시간 기준, 10초 간격)
+  const nG = rows.filter(r => r.route === 'GREEN').length;
+  const recentPct = rows.length ? Math.round(nG / rows.length * 100) : 0;
+  const mins = rows.length > 1 ? Math.round((rows[rows.length - 1].ts - rows[0].ts) / 60000) : 0;
+  const events = rows.filter(r => r.ev).slice(-12).reverse();
+
+  // AI 카드 문장과 단계
+  let level = 'ok',
+    text,
+    tag = '지금 AI의 판단';
+  if (!L) {
+    level = 'info';
+    text = url || preview ? '장치 데이터를 기다리는 중이에요.' : '아래 "연결 설정"에 Apps Script 주소를 넣으면 실제 장치 데이터가 표시돼요.';
+  } else if (!devOn) {
+    level = 'danger';
+    text = `장치 신호가 ${agoText(devAge)}부터 끊겼어요. ESP32 전원과 핫스팟 연결을 확인해 주세요. 장치는 인터넷 없이도 규칙대로 계속 제어해요.`;
+  } else if (isAI && lastValid) {
+    text = lastValid.reason;
+    level = lastValid.alert ? 'warn' : 'ok';
+  } else {
+    level = 'info';
+    tag = '규칙 기반 대체 모드';
+    text = aiLog[0] && !aiLog[0].valid ? aiLog[0].reason : 'AI 판단이 없어 기존 규칙(800 미만 → 온실, 1200 초과 → 챔버)으로 제어하고 있어요.';
+  }
+  if (L && devOn && Number(L.ga) > 1500) {
+    level = 'danger';
+  }
+  const alertMsg = devOn && isAI && lastValid && lastValid.alert;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen",
+    "data-screen-label": "\uC2E4\uBB3C \uC5F0\uACB0"
+  }, preview && /*#__PURE__*/React.createElement("div", {
+    className: "live-banner"
+  }, /*#__PURE__*/React.createElement("b", null, "\uC608\uC2DC \uB370\uC774\uD130"), " \uD654\uBA74 \uBBF8\uB9AC\uBCF4\uAE30\uC6A9\uC774\uC5D0\uC694. \uC2E4\uCE21\uAC12\uC774 \uC544\uB2C8\uC5D0\uC694. ", /*#__PURE__*/React.createElement("button", {
+    className: "btn sm ghost",
+    onClick: () => setPreview(false)
+  }, "\uB044\uAE30")), /*#__PURE__*/React.createElement("div", {
+    className: "live-status"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: 'live ' + (devOn ? 'on' : 'off')
+  }, /*#__PURE__*/React.createElement("i", null), devOn ? '장치 수신 중' : '장치 끊김'), /*#__PURE__*/React.createElement(Badge, {
+    tone: isAI && devOn ? 'ok' : 'info',
+    dot: true
+  }, isAI && devOn ? 'AI 판단 반영 중' : '규칙 기반 제어'), /*#__PURE__*/React.createElement("span", {
+    className: "mono live-meta"
+  }, preview ? 'PREVIEW' : 'ESP32 cl-01 · Google Sheets', " \xB7 \uB9C8\uC9C0\uB9C9 \uC218\uC2E0 ", L ? agoText(devAge) : '—', !serverOk && err ? ' · 서버 응답 없음' : '', loading && !data ? ' · 불러오는 중' : '')), /*#__PURE__*/React.createElement("section", {
+    className: 'ai-card live-ai lv-' + level
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ai-top"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ai-tag"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pulse"
+  }), tag), /*#__PURE__*/React.createElement("span", {
+    className: "ai-mode"
+  }, "Gemini 5\uBD84\uB9C8\uB2E4 \uD310\uB2E8 \xB7 \uC548\uC804 \uADDC\uCE59 5\uCD08\uB9C8\uB2E4 (\uADDC\uCE59 \uC6B0\uC120)")), /*#__PURE__*/React.createElement("p", {
+    className: "ai-text"
+  }, text), /*#__PURE__*/React.createElement("div", {
+    className: "ai-meta"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uD604\uC7AC \uACBD\uB85C"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, L ? ROUTE_L[L.route] || L.route : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uC804\uD658 \uAE30\uC900 (\uD558\uD55C~\uC0C1\uD55C)"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, L ? `${lo} ~ ${hi} ppm` : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "AI \uD310\uB2E8 \uC2DC\uAC01"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, lastValid ? U.hms(lastValid.ts) : '—')), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, "\uBAA8\uB4DC"), /*#__PURE__*/React.createElement("b", {
+    className: "mono"
+  }, L ? isAI ? 'AI' : 'RULE' : '—'))), alertMsg && /*#__PURE__*/React.createElement("div", {
+    className: "anom bad"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "anom-l"
+  }, /*#__PURE__*/React.createElement("b", null, "\uC774\uC0C1 \uC9D5\uD6C4"), /*#__PURE__*/React.createElement("span", null, alertMsg)))), /*#__PURE__*/React.createElement(Card, {
+    title: "CO\u2082 \uBA40\uD2F0 \uB77C\uC6B0\uD305 \xB7 \uC2E4\uBB3C",
+    sub: "\uACF5\uAE09\uC6D0 \uD558\uB098 \u2192 \uC11C\uBCF4 \uBC38\uBE0C 2\uAC1C \u2192 \uC628\uC2E4 \uB610\uB294 \uBC84\uC12F\uCC54\uBC84 (\uB450 \uBC38\uBE0C\uAC00 \uB3D9\uC2DC\uC5D0 \uB2EB\uD788\uC9C0 \uC54A\uC74C)",
+    className: "flow-card live-flow"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flow"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flow-src"
+  }, /*#__PURE__*/React.createElement("span", null, "CO\u2082 \uACF5\uAE09\uC6D0"), /*#__PURE__*/React.createElement(Icon, {
+    name: "flask",
+    size: 26
+  }), /*#__PURE__*/React.createElement("b", {
+    className: "mono",
+    style: {
+      fontSize: 13
+    }
+  }, "ZC-II"), /*#__PURE__*/React.createElement("small", null, "\uC2DC\uC5F0\uC6A9 \uC800\uC555 \uACF5\uAE09\uC6D0")), /*#__PURE__*/React.createElement("div", {
+    className: "flow-lines",
+    style: {
+      gridTemplateRows: 'repeat(2, 1fr)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: 'fl fl-gh' + (green ? ' on' : '')
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "\uC628\uC2E4"), /*#__PURE__*/React.createElement("i", null)), /*#__PURE__*/React.createElement("div", {
+    className: 'fl fl-mu' + (L && !green ? ' on' : '')
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "\uCC54\uBC84"), /*#__PURE__*/React.createElement("i", null))), /*#__PURE__*/React.createElement("div", {
+    className: "flow-dst",
+    style: {
+      gridTemplateRows: 'repeat(2, 1fr)'
+    }
+  }, /*#__PURE__*/React.createElement(LiveDest, {
+    n: "1",
+    name: "\uC2A4\uB9C8\uD2B8 \uC628\uC2E4",
+    sub: "MH-Z19C #1 \xB7 \uAD11\uD569\uC131 \uBAA9\uD45C 900~1,100",
+    ppm: L ? Number(L.ga) : null,
+    raw: L ? Number(L.g) : null,
+    range: GH_TARGET,
+    scaleMax: 1700,
+    on: green,
+    tone: fanOn ? {
+      t: 'danger',
+      l: '쿨링팬 작동'
+    } : null,
+    note: `전환 ${lo}~${hi}`
+  }), /*#__PURE__*/React.createElement(LiveDest, {
+    n: "2",
+    name: "\uBC84\uC12F \uC7AC\uBC30 \uCC54\uBC84",
+    sub: "MH-Z19C #2 \xB7 \uB0A8\uB294 CO\u2082 \uC218\uC6A9 \xB7 \uC0C1\uD55C 4,500",
+    ppm: L ? Number(L.ca) : null,
+    raw: L ? Number(L.c) : null,
+    range: null,
+    scaleMax: 5000,
+    on: L && !green,
+    tone: L && Number(L.ca) >= 4500 ? {
+      t: 'warn',
+      l: '포화 근접'
+    } : null,
+    note: "\uC13C\uC11C \uCE21\uC815 \uC0C1\uD55C 5,000"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "grid-2"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "\uBD84\uBC30 \uBE44\uC728",
+    sub: "\uBC38\uBE0C\uAC00 \uC5F4\uB824 \uC788\uB358 \uC2DC\uAC04 \uAE30\uC900"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stack"
+  }, recentPct > 0 && /*#__PURE__*/React.createElement("i", {
+    style: {
+      width: recentPct + '%',
+      background: 'var(--c-gh)'
+    }
+  }, recentPct >= 14 && /*#__PURE__*/React.createElement("span", null, "\uC628\uC2E4 ", recentPct, "%")), recentPct < 100 && rows.length > 0 && /*#__PURE__*/React.createElement("i", {
+    style: {
+      width: 100 - recentPct + '%',
+      background: 'var(--c-mu)'
+    }
+  }, 100 - recentPct >= 14 && /*#__PURE__*/React.createElement("span", null, "\uCC54\uBC84 ", 100 - recentPct, "%"))), /*#__PURE__*/React.createElement("div", {
+    className: "row3"
+  }, /*#__PURE__*/React.createElement(Stat, {
+    small: true,
+    label: `최근 ${mins}분`,
+    value: rows.length ? recentPct : '—',
+    unit: "% \uC628\uC2E4"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    small: true,
+    label: "\uC774\uBC88 \uC6B4\uC804 \uB204\uC801 (ESP32)",
+    value: L ? L.gp : '—',
+    unit: "% \uC628\uC2E4"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    small: true,
+    label: "\uACBD\uB85C \uC804\uD658",
+    value: rows.filter(r => r.ev && r.ev.includes('TO_')).length,
+    unit: "\uD68C"
+  }))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC628\uC2E4 \uD658\uACBD \xB7 \uC548\uC804\uC7A5\uCE58",
+    sub: "DHT22 \xB7 \uB9B4\uB808\uC774 \uCFE8\uB9C1\uD32C"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row3"
+  }, /*#__PURE__*/React.createElement(Stat, {
+    small: true,
+    label: "\uC628\uB3C4",
+    value: L && L.tc !== '' ? U.f1(Number(L.tc)) : '—',
+    unit: "\xB0C"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    small: true,
+    label: "\uC2B5\uB3C4",
+    value: L && L.h !== '' ? U.f0(Number(L.h)) : '—',
+    unit: "%"
+  }), /*#__PURE__*/React.createElement(Stat, {
+    small: true,
+    label: "\uCFE8\uB9C1\uD32C (1,500 \uCD08\uACFC \uC2DC)",
+    value: L ? fanOn ? '작동' : '대기' : '—',
+    unit: "",
+    tone: fanOn ? 'danger' : undefined
+  })))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC628\uC2E4 CO\u2082",
+    sub: "\uCD08\uB85D \uB760 = \uBAA9\uD45C 900~1,100 \xB7 \uC810\uC120 = AI\uAC00 \uC815\uD55C \uC804\uD658 \uD558\uD55C/\uC0C1\uD55C \xB7 \uC138\uB85C\uC120 = \uACBD\uB85C \uC804\uD658"
+  }, rows.length ? /*#__PURE__*/React.createElement(PpmChart, {
+    rows: rows,
+    keyRaw: "g",
+    keyAvg: "ga",
+    band: GH_TARGET,
+    lines: [{
+      y: 1500,
+      c: 'var(--danger)',
+      l: '팬 1,500'
+    }],
+    yMax: 5000,
+    yMinTop: 1600,
+    showLoHi: true
+  }) : /*#__PURE__*/React.createElement(Empty, null, "\uC544\uC9C1 \uB370\uC774\uD130\uAC00 \uC5C6\uC5B4\uC694.")), /*#__PURE__*/React.createElement(Card, {
+    title: "\uBC84\uC12F\uCC54\uBC84 CO\u2082",
+    sub: "\uC810\uC120 = \uC0C1\uD55C 4,500 \xB7 \uC13C\uC11C \uCE21\uC815 \uC0C1\uD55C\uC740 5,000\uC774\uB77C \uADF8 \uC704\uB294 \uD3C9\uD3C9\uD558\uAC8C \uBCF4\uC5EC\uC694"
+  }, rows.length ? /*#__PURE__*/React.createElement(PpmChart, {
+    rows: rows,
+    keyRaw: "c",
+    keyAvg: "ca",
+    lines: [{
+      y: 4500,
+      c: 'var(--warn)',
+      l: '상한 4,500'
+    }],
+    yMax: 5100
+  }) : /*#__PURE__*/React.createElement(Empty, null, "\uC544\uC9C1 \uB370\uC774\uD130\uAC00 \uC5C6\uC5B4\uC694.")), /*#__PURE__*/React.createElement("div", {
+    className: "grid-2"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "AI \uD310\uB2E8 \uAE30\uB85D",
+    sub: "Gemini \uC751\uB2F5\uC740 \uAC80\uC99D\uC744 \uD1B5\uACFC\uD55C \uAC83\uB9CC \uC7A5\uCE58\uC5D0 \uC804\uB2EC\uB3FC\uC694"
+  }, aiLog.length ? /*#__PURE__*/React.createElement("ul", {
+    className: "log live-log"
+  }, aiLog.slice(0, 8).map((a, i) => /*#__PURE__*/React.createElement("li", {
+    key: i,
+    className: a.valid ? a.alert ? 'lv-warn' : 'lv-ok' : 'lv-info'
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "log-t mono"
+  }, U.hms(a.ts).slice(0, 5)), /*#__PURE__*/React.createElement("span", {
+    className: "log-k"
+  }, a.valid ? ROUTE_L[a.route] : '규칙'), /*#__PURE__*/React.createElement("span", {
+    className: "log-x"
+  }, a.reason, a.valid && /*#__PURE__*/React.createElement("em", {
+    className: "mono"
+  }, " (", a.lo, "~", a.hi, ")"), a.alert && /*#__PURE__*/React.createElement("b", {
+    className: "t-warn"
+  }, " \u26A0 ", a.alert))))) : /*#__PURE__*/React.createElement(Empty, null, "\uC544\uC9C1 AI \uD310\uB2E8\uC774 \uC5C6\uC5B4\uC694.")), /*#__PURE__*/React.createElement(Card, {
+    title: "\uBC38\uBE0C \uC804\uD658 \uAE30\uB85D",
+    sub: "ESP32\uAC00 \uC2E4\uC81C\uB85C \uBC38\uBE0C\uB97C \uC6C0\uC9C1\uC778 \uC21C\uAC04"
+  }, events.length ? /*#__PURE__*/React.createElement("ul", {
+    className: "log live-log"
+  }, events.map((r, i) => /*#__PURE__*/React.createElement("li", {
+    key: i,
+    className: r.ev === 'OVER_SUPPLY' ? 'lv-warn' : r.ev.startsWith('AI') ? 'lv-ok' : 'lv-info'
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "log-t mono"
+  }, U.hms(r.ts).slice(0, 5)), /*#__PURE__*/React.createElement("span", {
+    className: "log-k"
+  }, r.ev.startsWith('AI') ? 'AI' : r.ev === 'OVER_SUPPLY' ? '경고' : '규칙'), /*#__PURE__*/React.createElement("span", {
+    className: "log-x"
+  }, EV_L[r.ev] || r.ev, " \xB7 \uC628\uC2E4 ", U.f0(Number(r.ga)), " / \uCC54\uBC84 ", U.f0(Number(r.ca)), " ppm")))) : /*#__PURE__*/React.createElement(Empty, null, "\uC544\uC9C1 \uC804\uD658 \uAE30\uB85D\uC774 \uC5C6\uC5B4\uC694."))), /*#__PURE__*/React.createElement(Card, {
+    title: "\uC5F0\uACB0 \uC124\uC815",
+    sub: "Apps Script \uC6F9\uC571 \uC8FC\uC18C (\u2026/exec). \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB3FC\uC694."
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "fb"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: draft,
+    onChange: e => setDraft(e.target.value),
+    placeholder: "https://script.google.com/macros/s/\u2026/exec",
+    spellCheck: "false"
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn sm primary",
+    onClick: save
+  }, "\uC800\uC7A5")), /*#__PURE__*/React.createElement("div", {
+    className: "live-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "card-sub"
+  }, url ? err ? `서버 응답 없음: ${err}` : lastOk ? `서버 연결됨 · ${agoText((now - lastOk) / 1000)} 갱신` : '연결 중…' : '주소가 아직 없어요.'), /*#__PURE__*/React.createElement("button", {
+    className: "btn sm ghost",
+    onClick: () => setPreview(!preview)
+  }, preview ? '예시 데이터 끄기' : '예시 데이터로 화면 미리보기'))));
+}
+Object.assign(window, {
+  Live
+});
+</script>
+<script>
+/* cl-app.jsx (JSX 미리 변환됨) */
+/* Carbon Loop — 앱 셸 · 내비게이션 · 시연 패널 · 알림 배너 (src/App.tsx) */
+
+const TABS = [{
+  k: 'live',
+  l: '실물',
+  i: 'wifi'
+}, {
+  k: 'home',
+  l: '홈',
+  i: 'home'
+}, {
+  k: 'history',
+  l: '기록',
+  i: 'chart'
+}, {
+  k: 'routing',
+  l: '라우팅',
+  i: 'route'
+}, {
+  k: 'impact',
+  l: '임팩트',
+  i: 'leaf'
+}, {
+  k: 'alerts',
+  l: '알림',
+  i: 'bell'
+}, {
+  k: 'settings',
+  l: '설정',
+  i: 'gear'
+}, {
+  k: 'about',
+  l: '소개',
+  i: 'info'
+}];
+const TITLES = {
+  live: '실물 연결 · AI 라우팅',
+  home: '대시보드',
+  history: '기록',
+  routing: '멀티 라우팅',
+  impact: '임팩트 카드',
+  alerts: '알림',
+  settings: '설정',
+  about: '왜 카본루프인가'
+};
+function DemoPanel({
+  eng,
+  open,
+  setOpen
+}) {
+  const S = eng.settings;
+  const sc = [{
+    k: 'danger',
+    l: '위험 상황 재현',
+    d: '1500ppm 초과 → 쿨링팬 + 알림',
+    t: 'danger'
+  }, {
+    k: 'fault',
+    l: '센서 고장 재현',
+    d: '값 멈춤 → 값 튐 → 이상 징후',
+    t: 'warn'
+  }, {
+    k: 'disconnect',
+    l: '연결 끊김 재현',
+    d: '12초간 패킷 미수신',
+    t: 'info'
+  }, {
+    k: 'surge',
+    l: '포집 과잉 재현',
+    d: '온실 → 버섯 → 생체탄 순 라우팅',
+    t: 'ok'
+  }];
+  if (!S.demo) return null;
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    className: 'demo-fab' + (open ? ' on' : ''),
+    onClick: () => setOpen(!open)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "flask",
+    size: 17
+  }), "\uC2DC\uC5F0"), open && /*#__PURE__*/React.createElement("div", {
+    className: "demo-panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "demo-h"
+  }, /*#__PURE__*/React.createElement("b", null, "\uC2DC\uC5F0 \uCEE8\uD2B8\uB864"), /*#__PURE__*/React.createElement("span", {
+    className: "mono"
+  }, "SIM \xB7 ", S.speed, "x"), /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn",
+    onClick: () => setOpen(false)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "close",
+    size: 16
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "demo-sp"
+  }, /*#__PURE__*/React.createElement("span", null, "\uBC30\uC18D"), /*#__PURE__*/React.createElement(Seg, {
+    value: S.speed,
+    onChange: v => eng.setSettings({
+      speed: v
+    }),
+    options: [{
+      v: 1,
+      l: '1x'
+    }, {
+      v: 10,
+      l: '10x'
+    }, {
+      v: 60,
+      l: '60x'
+    }]
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "demo-list"
+  }, sc.map(s => /*#__PURE__*/React.createElement("button", {
+    key: s.k,
+    className: 'demo-b t-' + s.t,
+    onClick: () => {
+      eng.trigger(s.k);
+      if (s.k === 'surge' && window.__clGo) window.__clGo('routing');
+      if (s.k !== 'surge' && window.__clGo) window.__clGo('home');
+    }
+  }, /*#__PURE__*/React.createElement("i", null), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, s.l), /*#__PURE__*/React.createElement("span", null, s.d)), /*#__PURE__*/React.createElement(Icon, {
+    name: "play",
+    size: 14
+  })))), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost sm full",
+    onClick: () => eng.trigger('reset')
+  }, "\uC815\uC0C1 \uC0C1\uD0DC\uB85C \uB418\uB3CC\uB9AC\uAE30")));
+}
+function Toasts({
+  items,
+  dismiss
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "toasts"
+  }, items.map(t => /*#__PURE__*/React.createElement("div", {
+    key: t.id,
+    className: 'toast lv-' + (t.level || 'info'),
+    onClick: () => dismiss(t.id)
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "al-bar"
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, t.title), t.body && /*#__PURE__*/React.createElement("p", null, t.body)))));
+}
+function App() {
+  const eng = useEngine();
+  const S = eng.settings;
+  const [splash, setSplash] = useState(() => sessionStorage.getItem('cl.splash') !== '1');
+  const [tab, setTab] = useState(() => localStorage.getItem('cl.tab') || 'live');
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const mainRef = useRef();
+  const go = k => {
+    setTab(k);
+    localStorage.setItem('cl.tab', k);
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+    window.scrollTo(0, 0);
+  };
+  window.__clGo = go;
+  const dismiss = id => setToasts(ts => ts.filter(t => t.id !== id));
+  const toast = (title, level = 'info', body) => {
+    const id = Math.random();
+    setToasts(ts => [{
+      id,
+      title,
+      body,
+      level
+    }, ...ts].slice(0, 3));
+    setTimeout(() => dismiss(id), 4200);
+  };
+  useEffect(() => eng.onAlert(a => {
+    const id = a.id;
+    setToasts(ts => [{
+      id,
+      title: a.title,
+      body: a.body,
+      level: a.level
+    }, ...ts].slice(0, 3));
+    setTimeout(() => dismiss(id), 6000);
+    if (eng.settings.browserNotify && typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
+      try {
+        new Notification('카본루프 · ' + a.title, {
+          body: a.body
+        });
+      } catch (e) {}
+    }
+  }), []);
+  useEffect(() => {
+    document.documentElement.dataset.theme = S.dark ? 'dark' : 'light';
+  }, [S.dark]);
+  const restart = () => window.clStart();
+  const unread = eng.alerts.filter(a => !a.read).length;
+  const r = eng.latest;
+  const isLive = tab === 'live';
+  const screen = {
+    live: /*#__PURE__*/React.createElement(Live, null),
+    home: /*#__PURE__*/React.createElement(Home, {
+      eng: eng,
+      go: go
+    }),
+    history: /*#__PURE__*/React.createElement(History, {
+      eng: eng
+    }),
+    routing: /*#__PURE__*/React.createElement(Routing, {
+      eng: eng
+    }),
+    impact: /*#__PURE__*/React.createElement(Impact, {
+      eng: eng,
+      toast: toast
+    }),
+    alerts: /*#__PURE__*/React.createElement(Alerts, {
+      eng: eng
+    }),
+    settings: /*#__PURE__*/React.createElement(Settings, {
+      eng: eng,
+      toast: toast,
+      restart: restart
+    }),
+    about: /*#__PURE__*/React.createElement(About, {
+      eng: eng,
+      toast: toast
+    })
+  }[tab];
+  if (splash) return /*#__PURE__*/React.createElement(Splash, {
+    onDone: () => {
+      sessionStorage.setItem('cl.splash', '1');
+      setSplash(false);
+    }
+  });
+  return /*#__PURE__*/React.createElement("div", {
+    className: "app"
+  }, /*#__PURE__*/React.createElement("aside", {
+    className: "side"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "brand",
+    onClick: () => setSplash(true),
+    title: "\uC2DC\uC791 \uD654\uBA74 \uBCF4\uAE30"
+  }, /*#__PURE__*/React.createElement(Logo, null), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "\uCE74\uBCF8\uB8E8\uD504"), /*#__PURE__*/React.createElement("span", null, "CARBON LOOP"))), /*#__PURE__*/React.createElement("nav", null, TABS.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.k,
+    className: tab === t.k ? 'on' : '',
+    onClick: () => go(t.k)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: t.i
+  }), t.l, t.k === 'alerts' && unread > 0 && /*#__PURE__*/React.createElement("em", {
+    className: "dotn"
+  }, unread)))), /*#__PURE__*/React.createElement("div", {
+    className: "side-f"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "site"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "pin",
+    size: 14
+  }), /*#__PURE__*/React.createElement("span", null, "\uBCF8\uCEA0\uD37C\uC2A4 \uD559\uC0DD\uC2DD\uB2F9")), /*#__PURE__*/React.createElement("div", {
+    className: "mono side-src"
+  }, isLive ? '실물 장치 · Google Sheets' : S.demo ? `데모 · 시뮬레이터 ${S.speed}x` : 'LIVE · Firebase'))), /*#__PURE__*/React.createElement("div", {
+    className: "main",
+    ref: mainRef
+  }, /*#__PURE__*/React.createElement("header", {
+    className: "top"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "top-l"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "m-logo"
+  }, /*#__PURE__*/React.createElement(Logo, {
+    size: 24
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, TITLES[tab]), /*#__PURE__*/React.createElement("span", {
+    className: "top-sub mono"
+  }, isLive ? '실제 장치 데이터 · 시뮬레이션 아님' : /*#__PURE__*/React.createElement(React.Fragment, null, r ? `${new Date(r.ts).getMonth() + 1}월 ${new Date(r.ts).getDate()}일 ${U.hms(r.ts).slice(0, 5)}` : '—', " \xB7 ", S.demo ? '데모 모드 · 가상 데이터' : '실시간')))), /*#__PURE__*/React.createElement("div", {
+    className: "top-r"
+  }, !isLive && /*#__PURE__*/React.createElement("span", {
+    className: 'live ' + (eng.connected ? 'on' : 'off')
+  }, /*#__PURE__*/React.createElement("i", null), eng.connected ? '수신 중' : '끊김'), /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn",
+    onClick: () => eng.setSettings({
+      dark: !S.dark
+    }),
+    title: "\uD14C\uB9C8"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: S.dark ? 'sun' : 'moon'
+  })), /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn m-only",
+    onClick: () => go('alerts'),
+    title: "\uC54C\uB9BC"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "bell"
+  }), unread > 0 && /*#__PURE__*/React.createElement("em", {
+    className: "dotn"
+  }, unread)), /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn m-only",
+    onClick: () => go('about'),
+    title: "\uC18C\uAC1C"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "info"
+  })))), screen, /*#__PURE__*/React.createElement("div", {
+    className: "foot-sp"
+  })), /*#__PURE__*/React.createElement("nav", {
+    className: "tabbar"
+  }, TABS.filter(t => !['alerts', 'about', 'impact'].includes(t.k)).map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.k,
+    className: tab === t.k ? 'on' : '',
+    onClick: () => go(t.k)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: t.i,
+    size: 20
+  }), /*#__PURE__*/React.createElement("span", null, t.l)))), !isLive && /*#__PURE__*/React.createElement(DemoPanel, {
+    eng: eng,
+    open: demoOpen,
+    setOpen: setDemoOpen
+  }), /*#__PURE__*/React.createElement(Toasts, {
+    items: toasts,
+    dismiss: dismiss
+  }));
+}
+
+/* ---------- 부트스트랩: DataSource 선택 ---------- */
+(function boot() {
+  const eng = new CL.Engine(CL.loadSettings());
+  window.clEngine = eng;
+  window.clStart = () => {
+    const S = eng.settings;
+    eng.reset();
+    if (S.demo) eng.attach(new CL.SimulatorSource(S.deviceId), {
+      warmupDays: 7
+    });else eng.attach(new CL.FirebaseSource(S.firebaseUrl, S.deviceId));
+  };
+  window.clStart();
+  ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
+})();
+</script>
+</body>
+</html>
